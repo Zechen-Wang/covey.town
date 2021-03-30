@@ -25,6 +25,7 @@ import Video from '../../classes/Video/Video';
 import { CoveyTownInfo, TownJoinResponse, } from '../../classes/TownsServiceClient';
 import useCoveyAppState from '../../hooks/useCoveyAppState';
 import usePlayerName from '../../hooks/usePlayerName';
+import Profile from './Profile';
 
 interface TownSelectionProps {
   doLogin: (initData: TownJoinResponse) => Promise<boolean>
@@ -146,6 +147,7 @@ export default function TownSelection({ doLogin }: TownSelectionProps): JSX.Elem
           <Box p="4" borderWidth="1px" borderRadius="lg">
             <Heading as="h2" size="lg">Your username</Heading>
             <Text>{userName}</Text>
+            <Profile/>
           </Box>
           <Box borderWidth="1px" borderRadius="lg">
             <Heading p="4" as="h2" size="lg">Create a New Town</Heading>
