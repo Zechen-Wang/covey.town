@@ -29,3 +29,7 @@ export type CoveyAppState = {
   socket: Socket | null,
   apiClient: TownsServiceClient,
 };
+export type PlayerName = {
+  name: string
+  setName:(playerName: string) => void
+}
