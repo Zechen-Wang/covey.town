@@ -12,6 +12,14 @@ export interface TownJoinRequest {
   coveyTownID: string;
 }
 
+export interface TownAddBlockerRequest {
+  /** userName of the player that would like to join * */
+  blockerName: string;
+  /** ID of the town that the player would like to join * */
+  coveyTownID: string;
+}
+
+
 /**
  * The format of a response to join a Town in Covey.Town, as returned by the handler to the server
  * middleware
@@ -115,6 +123,14 @@ export default class TownsServiceClient {
       return response.data.response;
     }
     throw new Error(`Error processing request: ${response.data.message}`);
+  }
+
+  async addBlocker(requestData: TownAddBlockerRequest): Promise<void> {
+    const responseWrapper = await this._axios.post(
+      `/towns/${requestData.coveyTownID}/${requestData.blockerName}`,
+      requestData,
+    );
+    return TownsServiceClient.unwrapOrThrowError(responseWrapper, true);
   }
 
   async createTown(requestData: TownCreateRequest): Promise<TownCreateResponse> {

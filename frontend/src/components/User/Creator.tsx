@@ -1,4 +1,4 @@
-import React from 'react';
+import React, {useState} from 'react';
 import {
     ListItem,
     Stack,
@@ -7,11 +7,13 @@ import {
     Button,
   } from "@chakra-ui/react"
 import useCoveyAppState from '../../hooks/useCoveyAppState';
-import useVideoContext from "../VideoCall/VideoFrontend/hooks/useVideoContext/useVideoContext";
+// import useVideoContext from "../VideoCall/VideoFrontend/hooks/useVideoContext/useVideoContext";
 
 export default function Creator(): JSX.Element {
-    const { players } = useCoveyAppState();
-    const { room } = useVideoContext();
+    const { players, apiClient, currentTownID } = useCoveyAppState();
+    const [isBlocked, setIsBlocked] = useState<boolean>(false);
+
+    // const { room } = useVideoContext();
     return(
         <Stack>
             <Text>
@@ -22,9 +24,20 @@ export default function Creator(): JSX.Element {
                 <ListItem key={player.id}>
                     <>
                     {player.userName}
-                    
-                    <Button 
-                    colorScheme="red" size="sm">kick out</Button>
+                    {!isBlocked &&
+                    <Button onClick={
+                        async () => {
+                        await apiClient.addBlocker({
+                        coveyTownID: currentTownID,
+                        blockerName: player.userName,
+                        });setIsBlocked(true)}
+                    }
+                    colorScheme="red" size="sm">Block</Button>
+                    }
+                    {isBlocked &&
+                    <Button onClick = {()=>setIsBlocked(false)}
+                    colorScheme="green" size="sm">Unblock</Button>
+                    }
                     </>
                  </ListItem>
                 ))}
