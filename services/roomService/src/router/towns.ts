@@ -3,19 +3,19 @@ import { Express } from 'express';
 import { Server } from 'http';
 import { StatusCodes } from 'http-status-codes';
 import io from 'socket.io';
-import { updateUserByName } from '../dao/user';
 import {
+  checkUserByNameAndPasswordHandler,
+  checkUserByNameHandler,
+  createUserHandler,
   townAddBlockerHandler,
   townCreateHandler,
   townDeleteHandler,
   townJoinHandler,
+  townListBlockerHandler,
   townListHandler,
   townSubscriptionHandler,
   townUpdateHandler,
-  checkUserByNameHandler,
-  createUserHandler,
-  checkUserByNameAndPasswordHandler,
-  updateUserHandler
+  updateUserHandler,
 } from '../requestHandlers/CoveyTownRequestHandlers';
 import { logError } from '../Utils';
 
@@ -87,6 +87,18 @@ export default function addTownRoutes(http: Server, app: Express): io.Server {
     }
   });
 
+  app.get('/towns/:townID', BodyParser.json(), async (req, res) => {
+    try {
+      const result = await townListBlockerHandler({ coveyTownID: req.params.townID });
+      res.status(StatusCodes.OK).json(result);
+    } catch (err) {
+      logError(err);
+      res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
+        message: 'Internal server error, please see log in server for more details',
+      });
+    }
+  });
+
   /**
    * Create a town
    */
@@ -138,7 +150,7 @@ export default function addTownRoutes(http: Server, app: Express): io.Server {
       const result = await createUserHandler({
         userName: req.body.userName,
         password: req.body.password,
-        email:req.body.email,
+        email: req.body.email,
         gender: req.body.gender,
         age: req.body.age,
         city: req.body.city,

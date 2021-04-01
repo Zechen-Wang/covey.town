@@ -29,6 +29,16 @@ export interface TownAddBlockerRequest {
   coveyTownID: string;
 }
 
+export interface TownlistBlockerByTownIdRequest {
+  /** ID of the town that the player would like to join * */
+  coveyTownID: string;
+}
+
+export interface TownlistBlockerByTownIdResponse {
+  /** ID of the town that the player would like to join * */
+  blockers: string[];
+}
+
 /**
  * The format of a response to join a Town in Covey.Town, as returned by the handler to the server
  * middleware
@@ -211,7 +221,7 @@ export async function townAddBlockerHandler(
   }
   if (result.blockers.find((blocker: string) => blocker === requestData.blockerName)) {
     return {
-      isOK: false,
+      isOK: true,
       message: 'User is already in the block list',
     };
   }
@@ -229,6 +239,24 @@ export async function townListHandler(): Promise<ResponseEnvelope<TownListRespon
   return {
     isOK: true,
     response: { towns: townsStore.getTowns() },
+  };
+}
+
+export async function townListBlockerHandler(
+  requestData: TownlistBlockerByTownIdRequest,
+): Promise<ResponseEnvelope<TownlistBlockerByTownIdResponse>> {
+  const result = await getRoomById(requestData.coveyTownID);
+  if (result === null) {
+    return {
+      isOK: false,
+      response: { blockers: [] },
+      message: 'Error: No such town1',
+    };
+  }
+  return {
+    isOK: true,
+    response: { blockers: result.blockers },
+    message: 'blocker list',
   };
 }
 
