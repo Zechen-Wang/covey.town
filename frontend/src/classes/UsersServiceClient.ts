@@ -35,17 +35,6 @@ export default class UsersServiceClient {
     this._axios = axios.create({ baseURL });
   }
 
-  static unwrapOrThrowError<T>(response: AxiosResponse<ResponseEnvelope<T>>, ignoreResponse = false): T {
-    if (response.data.isOK) {
-      if (ignoreResponse) {
-        return {} as T;
-      }
-      assert(response.data.response);
-      return response.data.response;
-    }
-    throw new Error(`Error processing request: ${response.data.message}`);
-  }
-
   async findUserByName(requestData: string): Promise<boolean> {
     const responseWrapper  = await this._axios.get<ResponseEnvelope<void>>(`/signup/${requestData}`);
     if (responseWrapper.data.isOK) {
@@ -54,13 +43,15 @@ export default class UsersServiceClient {
     return false;
   }
 
-  async findUserByNameAndPassword(requestData: UserSignUpRequest): Promise<void> {
-    const responseWrapper  = await this._axios.post<ResponseEnvelope<void>>('/signup', requestData);
-    return UsersServiceClient.unwrapOrThrowError(responseWrapper, true);
+  async findUserByNameAndPassword(requestData: UserSignInRequest): Promise<boolean> {
+    const responseWrapper  = await this._axios.get<ResponseEnvelope<void>>(`/signin/${requestData.userName}/${requestData.password}`);
+    if (responseWrapper.data.isOK) {
+      return true;
+    }
+    return false;
   }
 
   async createUser(requestData: UserSignUpRequest): Promise<void> {
-    const responseWrapper  = await this._axios.post<ResponseEnvelope<void>>('/signup', requestData);
-    return UsersServiceClient.unwrapOrThrowError(responseWrapper, true);
+    await this._axios.post<ResponseEnvelope<void>>('/signup', requestData);
   }
 }

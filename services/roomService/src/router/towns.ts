@@ -13,6 +13,7 @@ import {
   townUpdateHandler,
   checkUserByNameHandler,
   createUserHandler,
+  checkUserByNameAndPasswordHandler,
 } from '../requestHandlers/CoveyTownRequestHandlers';
 import { logError } from '../Utils';
 
@@ -139,6 +140,21 @@ export default function addTownRoutes(http: Server, app: Express): io.Server {
         gender: req.body.gender,
         age: req.body.age,
         city: req.body.city,
+      });
+      res.status(StatusCodes.OK).json(result);
+    } catch (err) {
+      logError(err);
+      res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
+        message: 'Internal server error, please see log in server for more details',
+      });
+    }
+  });
+
+  app.get('/signin/:name/:password', BodyParser.json(), async (_req, res) => {
+    try {
+      const result = await checkUserByNameAndPasswordHandler({
+        userName: _req.params.name,
+        password: _req.params.password,
       });
       res.status(StatusCodes.OK).json(result);
     } catch (err) {

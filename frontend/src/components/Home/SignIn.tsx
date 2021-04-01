@@ -10,6 +10,7 @@ import {
   FormLabel,
   Box,
   Stack,
+  useToast,
 } from "@chakra-ui/react"
 import UsersServiceClient from '../../classes/UsersServiceClient'
 import usePlayerName from '../../hooks/usePlayerName';
@@ -19,9 +20,31 @@ export default function SignIn(): JSX.Element {
   const handleClick = () => setShow(!show)
   const [userName, setUserName] = React.useState('');
   const [password, setPassword] = React.useState('');
+  const toast = useToast();
   const { setName } = usePlayerName();
 
-  const handleLogIn = () => {
+  const handleLogIn = async () => {
+    if (!(userName && password)) {
+      toast({
+        title: "Sign in failed",
+        description: "Please complete all required fields",
+        status: "error",
+        duration: 3000,
+        isClosable: true
+      });
+      return;
+    }
+    const userServiceClient = new UsersServiceClient();
+    if (!await userServiceClient.findUserByNameAndPassword({userName, password})) {
+      toast({
+        title: "Sign in failed",
+        description: "User account does not exist.",
+        status: "error",
+        duration: 3000,
+        isClosable: true
+      });
+      return;
+    }
     setName(userName);
   }
 

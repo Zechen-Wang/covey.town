@@ -70,7 +70,6 @@ export default function SignUp(): JSX.Element {
       });
       return;
     }
-    console.log(await userServiceClient.findUserByName(userName));
     try {
       await userServiceClient.createUser({userName, password, email, gender, age, city});
     } catch (err) {

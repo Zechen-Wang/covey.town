@@ -15,22 +15,22 @@ export const createUser = async (user_instance: Object) => {
     return await UserModel.create(user_instance);
 }
 
-export const findUserByName = async (userName: String) => {
+export const findUserByName = async (userName: string) => {
     const filter = { userName };
     return await UserModel.findOne(filter);
 }
 
-export const findUserByNameAndPassword = async (userName: String, password: string) => {
-    const filter = {userName: userName, password: password}
+export const findUserByNameAndPassword = async (userName: string, password: string) => {
+    const filter = {userName, password}
     return await UserModel.findOne(filter);
 }
 
-export const updateUserByName = async (name: String, updated_info: Object) => {
+export const updateUserByName = async (name: string, updated_info: Object) => {
     const filter = { userName: name };
     return UserModel.findOneAndUpdate(filter, updated_info);
 }
 
-export const deleteUserByName = async (name: String) => {
+export const deleteUserByName = async (name: string) => {
     return UserModel.deleteOne({userName: name});
 }
 // Example:

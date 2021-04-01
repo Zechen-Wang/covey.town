@@ -255,6 +255,18 @@ export async function createUserHandler(requestData: UserSignUpRequest): Promise
   };
 }
 
+export async function checkUserByNameAndPasswordHandler(requestData: UserSignInRequest): Promise<ResponseEnvelope<void>> {
+  const result = await findUserByNameAndPassword(requestData.userName, requestData.password);
+  if (result !== null) {
+    return {
+      isOK: true,
+    }
+  }
+  return {
+    isOK: false,
+  };
+}
+
 /**
  * An adapter between CoveyTownController's event interface (CoveyTownListener)
  * and the low-level network communication protocol
