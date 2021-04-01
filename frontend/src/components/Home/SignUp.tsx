@@ -15,6 +15,7 @@ import {
   useToast,
 } from "@chakra-ui/react"
 import usePlayerName from '../../hooks/usePlayerName';
+import UsersServiceClient from '../../classes/UsersServiceClient'
 
 export default function SignUp(): JSX.Element {
 
@@ -22,6 +23,10 @@ export default function SignUp(): JSX.Element {
   const [password, setPassword] = React.useState('');
   const [passwordToMatch, setPasswordToMatch] = React.useState('');
   const [invalid, setInvalid] = React.useState(false);
+  const [email, setEmail] = React.useState('');
+  const [gender, setGender] = React.useState('');
+  const [age, setAge] = React.useState('');
+  const [city, setCity] = React.useState('');
   const toast = useToast();
   const { setName } = usePlayerName();
 
@@ -33,10 +38,10 @@ export default function SignUp(): JSX.Element {
     }
   }, [passwordToMatch, password])
 
-  const handleSignIn = () => {
+  const handleSignUp = async () => {
     if (!(userName && password && passwordToMatch)) {
       toast({
-        title: "Sign in failed",
+        title: "Sign up failed",
         description: "Please complete all required fields",
         status: "error",
         duration: 3000,
@@ -46,12 +51,35 @@ export default function SignUp(): JSX.Element {
     }
     if (invalid === true) {
       toast({
-        title: "Sign in failed",
+        title: "Sign up failed",
         description: "Password does not match",
         status: "error",
         duration: 3000,
         isClosable: true
       });
+      return;
+    }
+    const userServiceClient = new UsersServiceClient();
+    if (await userServiceClient.findUserByName(userName)) {
+      toast({
+        title: "Sign up failed",
+        description: "Username already exsits. Please choose other names.",
+        status: "error",
+        duration: 3000,
+        isClosable: true
+      });
+      return;
+    }
+    console.log(await userServiceClient.findUserByName(userName));
+    try {
+      await userServiceClient.createUser({userName, password, email, gender, age, city});
+    } catch (err) {
+      toast({
+        title: 'Unable to sign up',
+        description: err.toString(),
+        status: 'error'
+      })
+      return;
     }
     setName(userName);
   }
@@ -75,11 +103,11 @@ export default function SignUp(): JSX.Element {
       </FormControl>
       <FormControl mb='1rem'>
         <FormLabel fontSize='20px'>Email</FormLabel>
-        <Input type="email"/>
+        <Input type="email" value={email} onChange={(e) => setEmail(e.target.value)}/>
       </FormControl>
       <FormControl mb='1rem'>
         <FormLabel fontSize='20px'>Gender</FormLabel>
-        <Select placeholder="Select gender">
+        <Select placeholder="Select gender" value={gender} onChange={(e) => setGender(e.target.value)}>
           <option>Male</option>
           <option>Female</option>
           <option>Prefer not to say</option>
@@ -87,14 +115,14 @@ export default function SignUp(): JSX.Element {
       </FormControl>
       <FormControl mb='1rem'>
         <FormLabel fontSize='20px'>Age</FormLabel>
-        <NumberInput><NumberInputField /></NumberInput>
+        <NumberInput><NumberInputField value={age} onChange={(e) => setAge(e.target.value)}/></NumberInput>
       </FormControl>
       <FormControl mb='1rem'>
         <FormLabel fontSize='20px'>City</FormLabel>
-        <Input />
+        <Input value={city} onChange={(e) => setCity(e.target.value)}/>
       </FormControl>
         <Stack direction="column" spacing={7} align='center' pt='2rem'>
-          <Button colorScheme='green' size='lg' width='xs' onClick={handleSignIn}>Sign up</Button>
+          <Button colorScheme='green' size='lg' width='xs' onClick={handleSignUp}>Sign up</Button>
         </Stack>
       </Box>
     </VStack>

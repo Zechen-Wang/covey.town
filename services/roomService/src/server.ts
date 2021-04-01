@@ -5,7 +5,6 @@ import { AddressInfo } from 'net';
 import addTownRoutes from './router/towns';
 import CoveyTownsStore from './lib/CoveyTownsStore';
 import { connect } from "./database";
-// import { createUser,getUserByName, updateUserByName, deleteUserByName } from './dao/user';
 import { createRoom,getRoomById, updateRoomById, addAdminToRoom, deleteRoomById, RoomModel, Room } from './dao/room';
 import { v4 as uuidv4 } from 'uuid';
 

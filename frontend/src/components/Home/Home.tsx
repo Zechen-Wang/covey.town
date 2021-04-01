@@ -10,8 +10,8 @@ export default function Home(): JSX.Element {
   return (
     <>
       <SignIn />
-      <Text fontSize='60px' color="green.200" align="center">or</Text>
-      <SignUp/>
+      <Text fontSize='60px' color="green.200" align="center">--or--</Text>
+      <SignUp />
       <Text fontSize='15px' pt='5rem' align="center">Source code can be found <Link href="https://github.com/Zechen-Wang/covey.town" isExternal color='blue'>here</Link></Text>
     </>
   )

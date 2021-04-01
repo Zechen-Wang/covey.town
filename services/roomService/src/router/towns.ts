@@ -11,6 +11,8 @@ import {
   townListHandler,
   townSubscriptionHandler,
   townUpdateHandler,
+  checkUserByNameHandler,
+  createUserHandler,
 } from '../requestHandlers/CoveyTownRequestHandlers';
 import { logError } from '../Utils';
 
@@ -106,6 +108,37 @@ export default function addTownRoutes(http: Server, app: Express): io.Server {
         isPubliclyListed: req.body.isPubliclyListed,
         friendlyName: req.body.friendlyName,
         coveyTownPassword: req.body.coveyTownPassword,
+      });
+      res.status(StatusCodes.OK).json(result);
+    } catch (err) {
+      logError(err);
+      res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
+        message: 'Internal server error, please see log in server for more details',
+      });
+    }
+  });
+
+  app.get('/signup/:name', BodyParser.json(), async (_req, res) => {
+    try {
+      const result = await checkUserByNameHandler(_req.params.name);
+      res.status(StatusCodes.OK).json(result);
+    } catch (err) {
+      logError(err);
+      res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
+        message: 'Internal server error, please see log in server for more details',
+      });
+    }
+  });
+
+  app.post('/signup', BodyParser.json(), async (req, res) => {
+    try {
+      const result = await createUserHandler({
+        userName: req.body.userName,
+        password: req.body.password,
+        email:req.body.email,
+        gender: req.body.gender,
+        age: req.body.age,
+        city: req.body.city,
       });
       res.status(StatusCodes.OK).json(result);
     } catch (err) {

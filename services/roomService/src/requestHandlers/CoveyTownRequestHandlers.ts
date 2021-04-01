@@ -4,6 +4,7 @@ import { CoveyTownList, UserLocation } from '../CoveyTypes';
 import CoveyTownsStore from '../lib/CoveyTownsStore';
 import CoveyTownListener from '../types/CoveyTownListener';
 import Player from '../types/Player';
+import {findUserByNameAndPassword, createUser, findUserByName} from '../dao/user'
 
 /**
  * The format of a request to join a Town in Covey.Town, as dispatched by the server middleware
@@ -84,6 +85,20 @@ export interface TownUpdateRequest {
   coveyTownPassword: string;
   friendlyName?: string;
   isPubliclyListed?: boolean;
+}
+
+export interface UserSignInRequest {
+  userName: string;
+  password: string;
+}
+
+export interface UserSignUpRequest {
+  userName: string;
+  password: string;
+  email: string,
+  gender: string,
+  age: string,
+  city: string,
 }
 
 /**
@@ -217,6 +232,26 @@ export async function townUpdateHandler(
     message: !success
       ? 'Invalid password or update values specified. Please double check your town update password.'
       : undefined,
+  };
+}
+
+export async function checkUserByNameHandler(requestData: string): Promise<ResponseEnvelope<void>> {
+  const result = await findUserByName(requestData);
+  if (result !== null) {
+    return {
+      isOK: true,
+      message: 'User already exists.',
+    }
+  }
+  return {
+    isOK: false,
+  };
+}
+
+export async function createUserHandler(requestData: UserSignUpRequest): Promise<ResponseEnvelope<void>> {
+  createUser(requestData);
+  return {
+    isOK: true,
   };
 }
 

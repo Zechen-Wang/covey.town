@@ -223,8 +223,7 @@ function App(props: { setOnDisconnect: Dispatch<SetStateAction<Callback | undefi
   const page = useMemo(() => {
     if (name === '') {
       return <Home />
-    }
-    if (!appState.sessionToken) {
+    } if (!appState.sessionToken) {
       return <Login doLogin={setupGameController} />;
     } if (!videoInstance) {
       return <div>Loading...</div>;

@@ -11,6 +11,7 @@ import {
   Box,
   Stack,
 } from "@chakra-ui/react"
+import UsersServiceClient from '../../classes/UsersServiceClient'
 import usePlayerName from '../../hooks/usePlayerName';
 
 export default function SignIn(): JSX.Element {

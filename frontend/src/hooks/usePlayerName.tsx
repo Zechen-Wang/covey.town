@@ -4,16 +4,7 @@ import { PlayerName } from '../CoveyTypes';
 import PlayerNameContext from '../contexts/PlayerNameContext';
 
 /**
- * Use this hook to access the current user profile.
- *
- * To access the User class from the data layer, use this hook to get the user
- * current profile, then utilise its `user` field.
- *
- * To access the User class from parse, use
- * `Parse.User.currentAsync().then(...)`
- *
- * Use this hook if your component can only render when the user is logged in.
- * Otherwise, use the `useMaybeUser` hook.
+ * Use this hook to access the current player name.
  */
 export default function usePlayerName(): PlayerName {
   const ctx = useContext(PlayerNameContext);

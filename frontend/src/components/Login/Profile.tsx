@@ -23,10 +23,14 @@ import usePlayerName from '../../hooks/usePlayerName';
 
 export default function Profile(): JSX.Element {
 
-  const [username, setUsername] = React.useState(usePlayerName().name);
+  const userName = usePlayerName().name;
   const [password, setPassword] = React.useState('');
   const [passwordToMatch, setPasswordToMatch] = React.useState('');
   const [invalid, setInvalid] = React.useState(false);
+  const [email, setEmail] = React.useState('');
+  const [gender, setGender] = React.useState('');
+  const [age, setAge] = React.useState('');
+  const [city, setCity] = React.useState('');
   const toast = useToast();
   const {isOpen, onOpen, onClose} = useDisclosure()
 
@@ -39,7 +43,7 @@ export default function Profile(): JSX.Element {
   }, [passwordToMatch, password])
 
   const handleChange = () => {
-    if (!(username && password && passwordToMatch)) {
+    if (!(password && passwordToMatch)) {
       toast({
         title: "Edit failed",
         description: "Please complete all required fields",
@@ -74,7 +78,7 @@ export default function Profile(): JSX.Element {
           <ModalBody pb={6}>
           <FormControl mb='1rem' isRequired>
         <FormLabel fontSize='20px'>Username</FormLabel>
-        <Input value={username} onChange={(e) => setUsername(e.target.value)}/>
+        <Input value={userName} isReadOnly />
       </FormControl>
       <FormControl mb='1rem' isRequired>
         <FormLabel fontSize='20px'>Password</FormLabel>
@@ -86,11 +90,11 @@ export default function Profile(): JSX.Element {
       </FormControl>
       <FormControl mb='1rem'>
         <FormLabel fontSize='20px'>Email</FormLabel>
-        <Input type="email"/>
+        <Input type="email" value={email} onChange={(e) => setEmail(e.target.value)}/>
       </FormControl>
       <FormControl mb='1rem'>
         <FormLabel fontSize='20px'>Gender</FormLabel>
-        <Select placeholder="Select gender">
+        <Select placeholder="Select gender" value={gender} onChange={(e) => setGender(e.target.value)}>
           <option>Male</option>
           <option>Female</option>
           <option>Prefer not to say</option>
@@ -98,15 +102,15 @@ export default function Profile(): JSX.Element {
       </FormControl>
       <FormControl mb='1rem'>
         <FormLabel fontSize='20px'>Age</FormLabel>
-        <NumberInput><NumberInputField /></NumberInput>
+        <NumberInput><NumberInputField value={age} onChange={(e) => setAge(e.target.value)}/></NumberInput>
       </FormControl>
       <FormControl mb='1rem'>
         <FormLabel fontSize='20px'>City</FormLabel>
-        <Input />
+        <Input value={city} onChange={(e) => setCity(e.target.value)}/>
       </FormControl>       
           </ModalBody>
           <ModalFooter>
-            <Button data-testid='updatebutton' colorScheme="blue" mr={3} value="update" name='action2' onClick={handleChange}>
+            <Button colorScheme="blue" mr={3} onClick={handleChange}>
               Save
             </Button>
             <Button onClick={onClose}>Cancel</Button>
