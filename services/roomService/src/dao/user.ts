@@ -1,4 +1,4 @@
-const mongoose = require('mongoose');
+import mongoose from 'mongoose';
 const {Schema, model} = mongoose;
 const UserSchema = new Schema({
   userName: {type: String, required: true, index: true, unique: true},
@@ -25,8 +25,8 @@ export const findUserByNameAndPassword = async (userName: string, password: stri
     return await UserModel.findOne(filter);
 }
 
-export const updateUserByName = async (name: string, updated_info: Object) => {
-    const filter = { userName: name };
+export const updateUserByName = async (userName: string, updated_info: Object) => {
+    const filter = { userName };
     return UserModel.findOneAndUpdate(filter, updated_info);
 }
 

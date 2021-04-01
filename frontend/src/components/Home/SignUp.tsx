@@ -60,7 +60,7 @@ export default function SignUp(): JSX.Element {
       return;
     }
     const userServiceClient = new UsersServiceClient();
-    if (await userServiceClient.findUserByName(userName)) {
+    if ((await userServiceClient.findUserByName(userName)).password) {
       toast({
         title: "Sign up failed",
         description: "Username already exsits. Please choose other names.",
@@ -114,7 +114,7 @@ export default function SignUp(): JSX.Element {
       </FormControl>
       <FormControl mb='1rem'>
         <FormLabel fontSize='20px'>Age</FormLabel>
-        <NumberInput><NumberInputField value={age} onChange={(e) => setAge(e.target.value)}/></NumberInput>
+        <NumberInput value={age} onChange={(s) => setAge(s)}><NumberInputField /></NumberInput>
       </FormControl>
       <FormControl mb='1rem'>
         <FormLabel fontSize='20px'>City</FormLabel>

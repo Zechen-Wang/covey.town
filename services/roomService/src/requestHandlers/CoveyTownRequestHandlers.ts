@@ -4,7 +4,7 @@ import { CoveyTownList, UserLocation } from '../CoveyTypes';
 import CoveyTownsStore from '../lib/CoveyTownsStore';
 import CoveyTownListener from '../types/CoveyTownListener';
 import Player from '../types/Player';
-import {findUserByNameAndPassword, createUser, findUserByName} from '../dao/user'
+import {findUserByNameAndPassword, createUser, findUserByName, updateUserByName} from '../dao/user'
 
 /**
  * The format of a request to join a Town in Covey.Town, as dispatched by the server middleware
@@ -94,6 +94,23 @@ export interface UserSignInRequest {
 
 export interface UserSignUpRequest {
   userName: string;
+  password: string;
+  email: string,
+  gender: string,
+  age: string,
+  city: string,
+}
+
+export interface UserUpdateRequest {
+  userName: string;
+  password: string;
+  email: string,
+  gender: string,
+  age: string,
+  city: string,
+}
+
+export interface UserUpdateResponse {
   password: string;
   email: string,
   gender: string,
@@ -235,21 +252,34 @@ export async function townUpdateHandler(
   };
 }
 
-export async function checkUserByNameHandler(requestData: string): Promise<ResponseEnvelope<void>> {
+export async function checkUserByNameHandler(requestData: string): Promise<ResponseEnvelope<UserUpdateResponse>> {
   const result = await findUserByName(requestData);
   if (result !== null) {
     return {
       isOK: true,
-      message: 'User already exists.',
+      response: {
+        password: result.password,
+        email: result.email,
+        gender: result.gender,
+        age: result.age,
+        city: result.city,
+      },
     }
   }
   return {
     isOK: false,
+    response: {
+      password: '',
+      email: '',
+      gender: '',
+      age: '',
+      city: '',
+    }
   };
 }
 
 export async function createUserHandler(requestData: UserSignUpRequest): Promise<ResponseEnvelope<void>> {
-  createUser(requestData);
+  await createUser(requestData);
   return {
     isOK: true,
   };
@@ -264,6 +294,19 @@ export async function checkUserByNameAndPasswordHandler(requestData: UserSignInR
   }
   return {
     isOK: false,
+  };
+}
+
+export async function updateUserHandler(requestData: UserUpdateRequest): Promise<ResponseEnvelope<void>> {
+  await updateUserByName(requestData.userName, new Object({
+    password: requestData.password,
+    email: requestData.email,
+    gender: requestData.gender,
+    age: requestData.age,
+    city: requestData.city,
+  }));
+  return {
+    isOK: true,
   };
 }
 

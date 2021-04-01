@@ -3,6 +3,7 @@ import { Express } from 'express';
 import { Server } from 'http';
 import { StatusCodes } from 'http-status-codes';
 import io from 'socket.io';
+import { updateUserByName } from '../dao/user';
 import {
   townAddBlockerHandler,
   townCreateHandler,
@@ -14,6 +15,7 @@ import {
   checkUserByNameHandler,
   createUserHandler,
   checkUserByNameAndPasswordHandler,
+  updateUserHandler
 } from '../requestHandlers/CoveyTownRequestHandlers';
 import { logError } from '../Utils';
 
@@ -155,6 +157,25 @@ export default function addTownRoutes(http: Server, app: Express): io.Server {
       const result = await checkUserByNameAndPasswordHandler({
         userName: _req.params.name,
         password: _req.params.password,
+      });
+      res.status(StatusCodes.OK).json(result);
+    } catch (err) {
+      logError(err);
+      res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
+        message: 'Internal server error, please see log in server for more details',
+      });
+    }
+  });
+
+  app.patch('/profile/:name', BodyParser.json(), async (req, res) => {
+    try {
+      const result = await updateUserHandler({
+        userName: req.params.name,
+        password: req.body.password,
+        email: req.body.email,
+        gender: req.body.gender,
+        age: req.body.age,
+        city: req.body.city,
       });
       res.status(StatusCodes.OK).json(result);
     } catch (err) {

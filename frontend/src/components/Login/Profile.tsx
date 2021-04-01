@@ -20,10 +20,12 @@ import {
 import MenuItem from '@material-ui/core/MenuItem';
 import Typography from '@material-ui/core/Typography';
 import usePlayerName from '../../hooks/usePlayerName';
+import UsersServiceClient from '../../classes/UsersServiceClient'
 
 export default function Profile(): JSX.Element {
 
   const userName = usePlayerName().name;
+  // const userServiceClient = new UsersServiceClient();
   const [password, setPassword] = React.useState('');
   const [passwordToMatch, setPasswordToMatch] = React.useState('');
   const [invalid, setInvalid] = React.useState(false);
@@ -32,7 +34,21 @@ export default function Profile(): JSX.Element {
   const [age, setAge] = React.useState('');
   const [city, setCity] = React.useState('');
   const toast = useToast();
-  const {isOpen, onOpen, onClose} = useDisclosure()
+  const {isOpen, onOpen, onClose} = useDisclosure();
+
+  const userServiceClient = React.useMemo(() =>
+    new UsersServiceClient()
+  , []);
+
+  const userInfomation = React.useCallback(() => {
+    userServiceClient.findUserByName(userName).then((updateResponse) => {
+      setPassword(updateResponse.password);
+      setEmail(updateResponse.email);
+      setGender(updateResponse.gender);
+      setAge(updateResponse.age);
+      setCity(updateResponse.city);
+    })
+  },[userName, userServiceClient]);
 
   React.useEffect(() => {
     if (passwordToMatch && password !== passwordToMatch) {
@@ -41,6 +57,11 @@ export default function Profile(): JSX.Element {
       setInvalid(false);
     }
   }, [passwordToMatch, password])
+
+  const handleProfile = async() => {
+    onOpen();
+    userInfomation();
+  }
 
   const handleChange = () => {
     if (!(password && passwordToMatch)) {
@@ -61,12 +82,15 @@ export default function Profile(): JSX.Element {
         duration: 3000,
         isClosable: true
       });
+      return;
     }
+    userServiceClient.updateUser({userName, password, email, gender, age, city});
+    onClose();
   }
 
   return (
     <>
-    <MenuItem onClick={onOpen}>
+    <MenuItem onClick={handleProfile}>
       <Typography variant="body1">Profile</Typography>
     </MenuItem>
     <Modal isOpen={isOpen} onClose={onClose}>
@@ -102,7 +126,7 @@ export default function Profile(): JSX.Element {
       </FormControl>
       <FormControl mb='1rem'>
         <FormLabel fontSize='20px'>Age</FormLabel>
-        <NumberInput><NumberInputField value={age} onChange={(e) => setAge(e.target.value)}/></NumberInput>
+        <NumberInput value={age} onChange={(s) => setAge(s)}><NumberInputField/></NumberInput>
       </FormControl>
       <FormControl mb='1rem'>
         <FormLabel fontSize='20px'>City</FormLabel>

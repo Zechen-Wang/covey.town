@@ -15,6 +15,14 @@ export interface UserSignUpRequest {
   city: string,
 }
 
+export interface UserUpdateResponse {
+  password: string;
+  email: string,
+  gender: string,
+  age: string,
+  city: string,
+}
+
 export interface ResponseEnvelope<T> {
   isOK: boolean;
   message?: string;
@@ -35,12 +43,10 @@ export default class UsersServiceClient {
     this._axios = axios.create({ baseURL });
   }
 
-  async findUserByName(requestData: string): Promise<boolean> {
-    const responseWrapper  = await this._axios.get<ResponseEnvelope<void>>(`/signup/${requestData}`);
-    if (responseWrapper.data.isOK) {
-      return true;
-    }
-    return false;
+  async findUserByName(requestData: string): Promise<UserUpdateResponse> {
+    const responseWrapper  = await this._axios.get<ResponseEnvelope<UserUpdateResponse>>(`/signup/${requestData}`);
+    assert(responseWrapper.data.response);
+    return responseWrapper.data.response;
   }
 
   async findUserByNameAndPassword(requestData: UserSignInRequest): Promise<boolean> {
@@ -53,5 +59,15 @@ export default class UsersServiceClient {
 
   async createUser(requestData: UserSignUpRequest): Promise<void> {
     await this._axios.post<ResponseEnvelope<void>>('/signup', requestData);
+  }
+
+  async updateUser(requestData: UserSignUpRequest): Promise<void> {
+    await this._axios.patch<ResponseEnvelope<void>>(`/profile/${requestData.userName}`, {
+      password: requestData.password,
+      email: requestData.email,
+      gender: requestData.gender,
+      age: requestData.age,
+      city: requestData.city,
+    });
   }
 }
