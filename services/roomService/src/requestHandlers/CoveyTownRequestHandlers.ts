@@ -1,10 +1,16 @@
 import assert from 'assert';
 import { Socket } from 'socket.io';
 import { CoveyTownList, UserLocation } from '../CoveyTypes';
+import { addBlockerToRoom, createRoom, getRoomById } from '../dao/room';
+import {
+  createUser,
+  findUserByName,
+  findUserByNameAndPassword,
+  updateUserByName,
+} from '../dao/user';
 import CoveyTownsStore from '../lib/CoveyTownsStore';
 import CoveyTownListener from '../types/CoveyTownListener';
 import Player from '../types/Player';
-import {findUserByNameAndPassword, createUser, findUserByName, updateUserByName} from '../dao/user'
 
 /**
  * The format of a request to join a Town in Covey.Town, as dispatched by the server middleware
@@ -95,27 +101,27 @@ export interface UserSignInRequest {
 export interface UserSignUpRequest {
   userName: string;
   password: string;
-  email: string,
-  gender: string,
-  age: string,
-  city: string,
+  email: string;
+  gender: string;
+  age: string;
+  city: string;
 }
 
 export interface UserUpdateRequest {
   userName: string;
   password: string;
-  email: string,
-  gender: string,
-  age: string,
-  city: string,
+  email: string;
+  gender: string;
+  age: string;
+  city: string;
 }
 
 export interface UserUpdateResponse {
   password: string;
-  email: string,
-  gender: string,
-  age: string,
-  city: string,
+  email: string;
+  gender: string;
+  age: string;
+  city: string;
 }
 
 /**
@@ -147,13 +153,26 @@ export async function townJoinHandler(
       message: 'Error: No such town',
     };
   }
-  // xiao
-  if (coveyTownController.blockers.find(blocker => blocker === requestData.userName)) {
+  const result = await getRoomById(requestData.coveyTownID);
+  if (result === null) {
     return {
       isOK: false,
-      message: 'User is in the block list',
+      message: 'Error: No such town',
     };
   }
+
+  if (result.blockers.find((blocker: string) => blocker === requestData.userName))
+    return {
+      isOK: false,
+      message: `User ${requestData.userName} is in the block list`,
+    };
+
+  // if (coveyTownController.blockers.find(blocker => blocker === requestData.userName)) {
+  //   return {
+  //     isOK: false,
+  //     message: 'User is in the block list',
+  //   };
+  // }
   const newPlayer = new Player(requestData.userName);
   const newSession = await coveyTownController.addPlayer(newPlayer);
   assert(newSession.videoToken);
@@ -183,7 +202,21 @@ export async function townAddBlockerHandler(
     };
   }
 
-  coveyTownController.addBlocker(requestData.blockerName);
+  const result = await getRoomById(requestData.coveyTownID);
+  if (result === null) {
+    return {
+      isOK: false,
+      message: 'Error: No such town1',
+    };
+  }
+  if (result.blockers.find((blocker: string) => blocker === requestData.blockerName)) {
+    return {
+      isOK: false,
+      message: 'User is already in the block list',
+    };
+  }
+  addBlockerToRoom(result.roomid, requestData.blockerName);
+  // coveyTownController.addBlocker(requestData.blockerName);
 
   return {
     isOK: true,
@@ -210,6 +243,14 @@ export async function townCreateHandler(
     };
   }
   const newTown = townsStore.createTown(requestData.friendlyName, requestData.isPubliclyListed);
+  createRoom({
+    roomid: newTown.coveyTownID,
+    passsword: newTown.townUpdatePassword,
+    roomname: newTown.friendlyName,
+    admins: [],
+    creator: 'test',
+    blockers: [],
+  });
   return {
     isOK: true,
     response: {
@@ -252,7 +293,9 @@ export async function townUpdateHandler(
   };
 }
 
-export async function checkUserByNameHandler(requestData: string): Promise<ResponseEnvelope<UserUpdateResponse>> {
+export async function checkUserByNameHandler(
+  requestData: string,
+): Promise<ResponseEnvelope<UserUpdateResponse>> {
   const result = await findUserByName(requestData);
   if (result !== null) {
     return {
@@ -264,7 +307,7 @@ export async function checkUserByNameHandler(requestData: string): Promise<Respo
         age: result.age,
         city: result.city,
       },
-    }
+    };
   }
   return {
     isOK: false,
@@ -274,37 +317,46 @@ export async function checkUserByNameHandler(requestData: string): Promise<Respo
       gender: '',
       age: '',
       city: '',
-    }
+    },
   };
 }
 
-export async function createUserHandler(requestData: UserSignUpRequest): Promise<ResponseEnvelope<void>> {
+export async function createUserHandler(
+  requestData: UserSignUpRequest,
+): Promise<ResponseEnvelope<void>> {
   await createUser(requestData);
   return {
     isOK: true,
   };
 }
 
-export async function checkUserByNameAndPasswordHandler(requestData: UserSignInRequest): Promise<ResponseEnvelope<void>> {
+export async function checkUserByNameAndPasswordHandler(
+  requestData: UserSignInRequest,
+): Promise<ResponseEnvelope<void>> {
   const result = await findUserByNameAndPassword(requestData.userName, requestData.password);
   if (result !== null) {
     return {
       isOK: true,
-    }
+    };
   }
   return {
     isOK: false,
   };
 }
 
-export async function updateUserHandler(requestData: UserUpdateRequest): Promise<ResponseEnvelope<void>> {
-  await updateUserByName(requestData.userName, new Object({
-    password: requestData.password,
-    email: requestData.email,
-    gender: requestData.gender,
-    age: requestData.age,
-    city: requestData.city,
-  }));
+export async function updateUserHandler(
+  requestData: UserUpdateRequest,
+): Promise<ResponseEnvelope<void>> {
+  await updateUserByName(
+    requestData.userName,
+    new Object({
+      password: requestData.password,
+      email: requestData.email,
+      gender: requestData.gender,
+      age: requestData.age,
+      city: requestData.city,
+    }),
+  );
   return {
     isOK: true,
   };
