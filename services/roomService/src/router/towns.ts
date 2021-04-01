@@ -8,6 +8,7 @@ import {
   checkUserByNameHandler,
   createUserHandler,
   townAddBlockerHandler,
+  townBlockerDeleteHandler,
   townCreateHandler,
   townDeleteHandler,
   townJoinHandler,
@@ -62,6 +63,21 @@ export default function addTownRoutes(http: Server, app: Express): io.Server {
       const result = await townDeleteHandler({
         coveyTownID: req.params.townID,
         coveyTownPassword: req.params.townPassword,
+      });
+      res.status(200).json(result);
+    } catch (err) {
+      logError(err);
+      res.status(500).json({
+        message: 'Internal server error, please see log in server for details',
+      });
+    }
+  });
+
+  app.delete('/towns/:townID/blockers/:blockerName', BodyParser.json(), async (req, res) => {
+    try {
+      const result = await townBlockerDeleteHandler({
+        coveyTownID: req.params.townID,
+        blockerName: req.params.blockerName,
       });
       res.status(200).json(result);
     } catch (err) {

@@ -8,21 +8,27 @@ import {
     useToast,
   } from "@chakra-ui/react"
 import useCoveyAppState from '../../hooks/useCoveyAppState';
-// import useVideoContext from "../VideoCall/VideoFrontend/hooks/useVideoContext/useVideoContext";
+import usePlayerName from '../../hooks/usePlayerName';
+import useVideoContext from "../VideoCall/VideoFrontend/hooks/useVideoContext/useVideoContext";
 
 export default function Creator(): JSX.Element {
     const { players, apiClient, currentTownID } = useCoveyAppState();
-    // const [isBlocked, setIsBlocked] = useState<boolean>(false);
     const [currentTownBlockers, setcurrentTownBlockers] = useState<string[]>([]);
     const toast = useToast();
+    const { room } = useVideoContext();
+    const {name} = usePlayerName();
 
-    const updateTownBlockersListings = useCallback(() => {
+    const updateTownBlockersListings = useCallback(async () => {
         // console.log(apiClient);
         apiClient.listBlockerByTownId({coveyTownID: currentTownID}).then((blockers)=>setcurrentTownBlockers(blockers.blockers))
-      }, [apiClient, currentTownID]);
+        if(currentTownBlockers.find((bname)=>bname===name)){
+            room.disconnect();
+        }
+      }, [apiClient, currentTownBlockers, currentTownID, name, room]);
       useEffect(() => {
         updateTownBlockersListings();
         const timer = setInterval(updateTownBlockersListings, 1000);
+        
         return () => {
           clearInterval(timer)
         };
@@ -64,7 +70,18 @@ export default function Creator(): JSX.Element {
                 <ListItem key={blocker}>
                     <>
                     {blocker}
-                    <Button colorScheme="green" size="sm">
+                    <Button onClick = {async () =>{await apiClient.deleteBlockerByTownId({
+                        blockerName:blocker,
+                        coveyTownID:currentTownID});
+                        toast({
+                            title: `unBlock User!`,
+                            description: `${blocker} is unblocked`,
+                            status: 'success',
+                            isClosable: true,
+                            duration: 2000,
+                          })
+                    }}
+                    colorScheme="green" size="sm">
                         Unblock
                     </Button>
                     </>
@@ -74,5 +91,3 @@ export default function Creator(): JSX.Element {
         </Stack>
     )
 }
-
-// onClick={async () => {await room.disconnect();}}

@@ -1,7 +1,7 @@
 import assert from 'assert';
 import { Socket } from 'socket.io';
 import { CoveyTownList, UserLocation } from '../CoveyTypes';
-import { addBlockerToRoom, createRoom, getRoomById } from '../dao/room';
+import { addBlockerToRoom, createRoom, getRoomById, removeBlockerFromRoom } from '../dao/room';
 import {
   createUser,
   findUserByName,
@@ -23,6 +23,13 @@ export interface TownJoinRequest {
 }
 
 export interface TownAddBlockerRequest {
+  /** userName of the player that would like to join * */
+  blockerName: string;
+  /** ID of the town that the player would like to join * */
+  coveyTownID: string;
+}
+
+export interface TownDeleteBlockerRequest {
   /** userName of the player that would like to join * */
   blockerName: string;
   /** ID of the town that the player would like to join * */
@@ -299,6 +306,23 @@ export async function townDeleteHandler(
     message: !success
       ? 'Invalid password. Please double check your town update password.'
       : undefined,
+  };
+}
+
+export async function townBlockerDeleteHandler(
+  requestData: TownDeleteBlockerRequest,
+): Promise<ResponseEnvelope<void>> {
+  const result = await getRoomById(requestData.coveyTownID);
+  if (result === null) {
+    return {
+      isOK: false,
+      message: 'Error: No such town1',
+    };
+  }
+  await removeBlockerFromRoom(requestData.coveyTownID, requestData.blockerName);
+  return {
+    isOK: true,
+    message: 'Blocker removed',
   };
 }
 
