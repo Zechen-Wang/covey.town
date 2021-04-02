@@ -16,9 +16,7 @@ import {
   ModalOverlay,
   useDisclosure,
   useToast
-} from "@chakra-ui/react"
-import MenuItem from '@material-ui/core/MenuItem';
-import Typography from '@material-ui/core/Typography';
+} from "@chakra-ui/react";
 import usePlayerName from '../../hooks/usePlayerName';
 import UsersServiceClient from '../../classes/UsersServiceClient'
 
@@ -42,6 +40,9 @@ export default function Profile(): JSX.Element {
     new UsersServiceClient()
   , []);
 
+  /**
+   * Render up-to-date user infomation
+   */
   const userInfomation = React.useCallback(() => {
     userServiceClient.findUserByName(userName).then((updateResponse) => {
       setPassword(updateResponse.password);
@@ -52,6 +53,9 @@ export default function Profile(): JSX.Element {
     })
   },[userName, userServiceClient]);
 
+  /**
+   * Ensure password matches
+   */
   React.useEffect(() => {
     if (passwordToMatch && password !== passwordToMatch) {
       setInvalid(true);
