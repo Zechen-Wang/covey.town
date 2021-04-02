@@ -145,8 +145,7 @@ export default function TownSelection({ doLogin }: TownSelectionProps): JSX.Elem
       <form>
         <Stack>
           <Box p="4" borderWidth="1px" borderRadius="lg">
-            <Heading as="h2" size="lg">Your username</Heading>
-            <Text>{userName}</Text>
+            <Heading as="h2" size="lg">Your username is {userName}</Heading>
             <Profile/>
           </Box>
           <Box borderWidth="1px" borderRadius="lg">

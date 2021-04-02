@@ -1,11 +1,17 @@
 import axios, { AxiosInstance, AxiosResponse } from 'axios';
 import assert from 'assert';
 
+/**
+ * The format of a request fro a user to sign in
+ */
 export interface UserSignInRequest {
   userName: string;
   password: string;
 }
 
+/**
+ * The format of a request for a user to sign up or update
+ */
 export interface UserSignUpRequest {
   userName: string;
   password: string;
@@ -15,6 +21,9 @@ export interface UserSignUpRequest {
   city: string,
 }
 
+/**
+ * Response from the server for a user update request
+ */
 export interface UserUpdateResponse {
   password: string;
   email: string,
@@ -23,6 +32,9 @@ export interface UserUpdateResponse {
   city: string,
 }
 
+/**
+ * Envelope that wraps any response from the server
+ */
 export interface ResponseEnvelope<T> {
   isOK: boolean;
   message?: string;

@@ -22,10 +22,12 @@ import Typography from '@material-ui/core/Typography';
 import usePlayerName from '../../hooks/usePlayerName';
 import UsersServiceClient from '../../classes/UsersServiceClient'
 
+/**
+ * The profile component which allows users to update their accounts, including password, email, gender, age and city
+ */
 export default function Profile(): JSX.Element {
 
   const userName = usePlayerName().name;
-  // const userServiceClient = new UsersServiceClient();
   const [password, setPassword] = React.useState('');
   const [passwordToMatch, setPasswordToMatch] = React.useState('');
   const [invalid, setInvalid] = React.useState(false);
@@ -90,9 +92,7 @@ export default function Profile(): JSX.Element {
 
   return (
     <>
-    <MenuItem onClick={handleProfile}>
-      <Typography variant="body1">Profile</Typography>
-    </MenuItem>
+    <Button onClick={handleProfile} colorScheme="pink">Edit profile</Button>
     <Modal isOpen={isOpen} onClose={onClose}>
       <ModalOverlay/>
       <ModalContent>

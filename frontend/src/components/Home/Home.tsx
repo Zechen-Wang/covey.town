@@ -6,6 +6,9 @@ import {
 import SignIn from './SignIn'
 import SignUp from './SignUp'
 
+/**
+ * The home page that will be displayed when start the app
+ */
 export default function Home(): JSX.Element {
   return (
     <>
