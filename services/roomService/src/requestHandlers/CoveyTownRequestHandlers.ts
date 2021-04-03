@@ -5,6 +5,7 @@ import {
   addAdminToRoom,
   addBlockerToRoom,
   createRoom,
+  deleteRoomById,
   getRoomById,
   removeAdminFromRoom,
   removeBlockerFromRoom,
@@ -208,12 +209,6 @@ export async function townJoinHandler(
       message: `User ${requestData.userName} is in the block list`,
     };
 
-  // if (coveyTownController.blockers.find(blocker => blocker === requestData.userName)) {
-  //   return {
-  //     isOK: false,
-  //     message: 'User is in the block list',
-  //   };
-  // }
   const newPlayer = new Player(requestData.userName);
   const newSession = await coveyTownController.addPlayer(newPlayer);
   assert(newSession.videoToken);
@@ -230,6 +225,12 @@ export async function townJoinHandler(
   };
 }
 
+/**
+ * A handler to process a creator or admin request to add a player to block list in a town. The flow is:
+ *  1. Client makes a TownAddBlockerRequest, this handler is executed
+ *
+ * @param requestData an object representing the add to block kust request
+ */
 export async function townAddBlockerHandler(
   requestData: TownAddBlockerRequest,
 ): Promise<ResponseEnvelope<void>> {
@@ -265,6 +266,12 @@ export async function townAddBlockerHandler(
   };
 }
 
+/**
+ * A handler to process a creator request to add a admin to town. The flow is:
+ *  1. Client makes a townAddAdminHandler, this handler is executed
+ *
+ * @param requestData an object representing the assign a player as admin request
+ */
 export async function townAddAdminHandler(
   requestData: TownAddAdminRequest,
 ): Promise<ResponseEnvelope<void>> {
@@ -312,16 +319,16 @@ export async function singleTownListHandler(
   requestData: TownlistByTownIdRequest,
 ): Promise<ResponseEnvelope<TownlistByTownIdResponse>> {
   const result = await getRoomById(requestData.coveyTownID);
-  if (result === null) {
-    return {
-      isOK: false,
-      message: 'Error: No such town1',
-    };
-  }
+  // if (result === null) {
+  //   return {
+  //     isOK: false,
+  //     message: 'Error: No such town1',
+  //   };
+  // }
   return {
     isOK: true,
     response: { blockers: result.blockers, creator: result.creator, admins: result.admins },
-    message: 'blocker list',
+    message: 'single town list',
   };
 }
 
@@ -358,6 +365,9 @@ export async function townDeleteHandler(
 ): Promise<ResponseEnvelope<Record<string, null>>> {
   const townsStore = CoveyTownsStore.getInstance();
   const success = townsStore.deleteTown(requestData.coveyTownID, requestData.coveyTownPassword);
+  if (success) {
+    deleteRoomById(requestData.coveyTownID);
+  }
   return {
     isOK: success,
     response: {},

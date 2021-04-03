@@ -28,6 +28,7 @@ export default function Creator(): JSX.Element {
         }
       }, [apiClient, currentTownBlockers, currentTownID, name, room]);
       useEffect(() => {
+        
         updateSingleTownListings();
         const timer = setInterval(updateSingleTownListings, 1000);
         
