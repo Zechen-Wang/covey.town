@@ -1,7 +1,14 @@
 import assert from 'assert';
 import { Socket } from 'socket.io';
 import { CoveyTownList, UserLocation } from '../CoveyTypes';
-import { addBlockerToRoom, createRoom, getRoomById, removeBlockerFromRoom } from '../dao/room';
+import {
+  addAdminToRoom,
+  addBlockerToRoom,
+  createRoom,
+  getRoomById,
+  removeAdminFromRoom,
+  removeBlockerFromRoom,
+} from '../dao/room';
 import {
   createUser,
   findUserByName,
@@ -29,6 +36,13 @@ export interface TownAddBlockerRequest {
   coveyTownID: string;
 }
 
+export interface TownAddAdminRequest {
+  /** userName of the player that would like to join * */
+  AdminName: string;
+  /** ID of the town that the player would like to join * */
+  coveyTownID: string;
+}
+
 export interface TownDeleteBlockerRequest {
   /** userName of the player that would like to join * */
   blockerName: string;
@@ -36,14 +50,23 @@ export interface TownDeleteBlockerRequest {
   coveyTownID: string;
 }
 
-export interface TownlistBlockerByTownIdRequest {
+export interface TownDeleteAdminRequest {
+  /** userName of the player that would like to join * */
+  AdminName: string;
   /** ID of the town that the player would like to join * */
   coveyTownID: string;
 }
 
-export interface TownlistBlockerByTownIdResponse {
+export interface TownlistByTownIdRequest {
+  /** ID of the town that the player would like to join * */
+  coveyTownID: string;
+}
+
+export interface TownlistByTownIdResponse {
   /** ID of the town that the player would like to join * */
   blockers: string[];
+  creator: string;
+  admins: string[];
 }
 
 /**
@@ -73,6 +96,7 @@ export interface TownJoinResponse {
 export interface TownCreateRequest {
   friendlyName: string;
   isPubliclyListed: boolean;
+  creatorName: string;
 }
 
 /**
@@ -241,6 +265,41 @@ export async function townAddBlockerHandler(
   };
 }
 
+export async function townAddAdminHandler(
+  requestData: TownAddAdminRequest,
+): Promise<ResponseEnvelope<void>> {
+  const townsStore = CoveyTownsStore.getInstance();
+
+  const coveyTownController = townsStore.getControllerForTown(requestData.coveyTownID);
+  if (!coveyTownController) {
+    return {
+      isOK: false,
+      message: 'Error: No such town1',
+    };
+  }
+
+  const result = await getRoomById(requestData.coveyTownID);
+  if (result === null) {
+    return {
+      isOK: false,
+      message: 'Error: No such town1',
+    };
+  }
+  if (result.admins.find((admin: string) => admin === requestData.AdminName)) {
+    return {
+      isOK: true,
+      message: 'User is already in the Admin list',
+    };
+  }
+  addAdminToRoom(result.roomid, requestData.AdminName);
+  // coveyTownController.addBlocker(requestData.blockerName);
+
+  return {
+    isOK: true,
+    message: 'Add Admin',
+  };
+}
+
 export async function townListHandler(): Promise<ResponseEnvelope<TownListResponse>> {
   const townsStore = CoveyTownsStore.getInstance();
   return {
@@ -249,20 +308,19 @@ export async function townListHandler(): Promise<ResponseEnvelope<TownListRespon
   };
 }
 
-export async function townListBlockerHandler(
-  requestData: TownlistBlockerByTownIdRequest,
-): Promise<ResponseEnvelope<TownlistBlockerByTownIdResponse>> {
+export async function singleTownListHandler(
+  requestData: TownlistByTownIdRequest,
+): Promise<ResponseEnvelope<TownlistByTownIdResponse>> {
   const result = await getRoomById(requestData.coveyTownID);
   if (result === null) {
     return {
       isOK: false,
-      response: { blockers: [] },
       message: 'Error: No such town1',
     };
   }
   return {
     isOK: true,
-    response: { blockers: result.blockers },
+    response: { blockers: result.blockers, creator: result.creator, admins: result.admins },
     message: 'blocker list',
   };
 }
@@ -283,7 +341,7 @@ export async function townCreateHandler(
     passsword: newTown.townUpdatePassword,
     roomname: newTown.friendlyName,
     admins: [],
-    creator: 'test',
+    creator: requestData.creatorName,
     blockers: [],
   });
   return {
@@ -323,6 +381,23 @@ export async function townBlockerDeleteHandler(
   return {
     isOK: true,
     message: 'Blocker removed',
+  };
+}
+
+export async function townAdminDeleteHandler(
+  requestData: TownDeleteAdminRequest,
+): Promise<ResponseEnvelope<void>> {
+  const result = await getRoomById(requestData.coveyTownID);
+  if (result === null) {
+    return {
+      isOK: false,
+      message: 'Error: No such town1',
+    };
+  }
+  await removeAdminFromRoom(requestData.coveyTownID, requestData.AdminName);
+  return {
+    isOK: true,
+    message: 'Admin removed',
   };
 }
 
