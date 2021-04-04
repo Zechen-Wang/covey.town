@@ -430,6 +430,11 @@ export async function townUpdateHandler(
   };
 }
 
+/**
+ * Check whether username exists
+ * @param requestData username
+ * @returns the account information of the user
+ */
 export async function checkUserByNameHandler(
   requestData: string,
 ): Promise<ResponseEnvelope<UserUpdateResponse>> {
@@ -458,6 +463,10 @@ export async function checkUserByNameHandler(
   };
 }
 
+/**
+ * Sign up a user, adding it to the database
+ * @param requestData the account information of the user
+ */
 export async function createUserHandler(
   requestData: UserSignUpRequest,
 ): Promise<ResponseEnvelope<void>> {
@@ -467,6 +476,10 @@ export async function createUserHandler(
   };
 }
 
+/**
+ * Check whether a user with a specified pair of username and password exists
+ * @param requestData the pair of username and password
+ */
 export async function checkUserByNameAndPasswordHandler(
   requestData: UserSignInRequest,
 ): Promise<ResponseEnvelope<void>> {
@@ -481,6 +494,10 @@ export async function checkUserByNameAndPasswordHandler(
   };
 }
 
+/**
+ * Update a user account
+ * @param requestData the updated account information
+ */
 export async function updateUserHandler(
   requestData: UserUpdateRequest,
 ): Promise<ResponseEnvelope<void>> {

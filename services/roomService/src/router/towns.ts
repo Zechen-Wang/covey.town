@@ -192,6 +192,9 @@ export default function addTownRoutes(http: Server, app: Express): io.Server {
     }
   });
 
+  /**
+   * Get a username
+   */
   app.get('/signup/:name', BodyParser.json(), async (_req, res) => {
     try {
       const result = await checkUserByNameHandler(_req.params.name);
@@ -204,6 +207,9 @@ export default function addTownRoutes(http: Server, app: Express): io.Server {
     }
   });
 
+  /**
+   * Create a user account
+   */
   app.post('/signup', BodyParser.json(), async (req, res) => {
     try {
       const result = await createUserHandler({
@@ -223,6 +229,9 @@ export default function addTownRoutes(http: Server, app: Express): io.Server {
     }
   });
 
+  /**
+   * Get a pair of username and password
+   */
   app.get('/signin/:name/:password', BodyParser.json(), async (_req, res) => {
     try {
       const result = await checkUserByNameAndPasswordHandler({
@@ -238,6 +247,9 @@ export default function addTownRoutes(http: Server, app: Express): io.Server {
     }
   });
 
+  /**
+   * Update a user account
+   */
   app.patch('/profile/:name', BodyParser.json(), async (req, res) => {
     try {
       const result = await updateUserHandler({
