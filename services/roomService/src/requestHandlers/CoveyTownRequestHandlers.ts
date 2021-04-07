@@ -309,6 +309,8 @@ export async function townAddAdminHandler(
 
 export async function townListHandler(): Promise<ResponseEnvelope<TownListResponse>> {
   const townsStore = CoveyTownsStore.getInstance();
+  // Read public towns from database
+  townsStore.loadTownsFromDb();
   return {
     isOK: true,
     response: { towns: townsStore.getTowns() },
@@ -350,6 +352,7 @@ export async function townCreateHandler(
     admins: [],
     creator: requestData.creatorName,
     blockers: [],
+    isPublic: newTown.isPubliclyListed,
   });
   return {
     isOK: true,
