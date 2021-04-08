@@ -4,7 +4,7 @@ import CORS from 'cors';
 import { AddressInfo } from 'net';
 import addTownRoutes from './router/towns';
 import CoveyTownsStore from './lib/CoveyTownsStore';
-import { connect } from "./database";
+import { connect } from './database';
 import { createRoom,getRoomById, updateRoomById, addAdminToRoom, deleteRoomById, RoomModel, Room } from './dao/room';
 import { v4 as uuidv4 } from 'uuid';
 

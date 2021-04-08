@@ -1,4 +1,5 @@
 import { Mongoose, Document } from 'mongoose';
+
 const mongoose = require('mongoose');
 const {Schema, model} = mongoose;
 const RoomUserSchema = new Schema({
