@@ -7,12 +7,14 @@ import {
   checkUserByNameAndPasswordHandler,
   checkUserByNameHandler,
   createUserHandler,
+  singleTownListHandler,
+  townAddAdminHandler,
   townAddBlockerHandler,
+  townAdminDeleteHandler,
   townBlockerDeleteHandler,
   townCreateHandler,
   townDeleteHandler,
   townJoinHandler,
-  townListBlockerHandler,
   townListHandler,
   townSubscriptionHandler,
   townUpdateHandler,
@@ -39,11 +41,31 @@ export default function addTownRoutes(http: Server, app: Express): io.Server {
     }
   });
 
-  // xiao
-  app.post('/towns/:townID/:blockerName', BodyParser.json(), async (req, res) => {
+  /**
+   * Add a blocker to town
+   */
+  app.post('/towns/:townID/blockers/:blockerName', BodyParser.json(), async (req, res) => {
     try {
       const result = await townAddBlockerHandler({
         blockerName: req.params.blockerName,
+        coveyTownID: req.params.townID,
+      });
+      res.status(StatusCodes.OK).json(result);
+    } catch (err) {
+      logError(err);
+      res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
+        message: 'Internal server error, please see log in server for more details',
+      });
+    }
+  });
+
+  /**
+   * Add a admin to town
+   */
+  app.post('/towns/:townID/admins/:adminName', BodyParser.json(), async (req, res) => {
+    try {
+      const result = await townAddAdminHandler({
+        AdminName: req.params.adminName,
         coveyTownID: req.params.townID,
       });
       res.status(StatusCodes.OK).json(result);
@@ -73,11 +95,32 @@ export default function addTownRoutes(http: Server, app: Express): io.Server {
     }
   });
 
+  /**
+   * remove a blocker from the town
+   */
   app.delete('/towns/:townID/blockers/:blockerName', BodyParser.json(), async (req, res) => {
     try {
       const result = await townBlockerDeleteHandler({
         coveyTownID: req.params.townID,
         blockerName: req.params.blockerName,
+      });
+      res.status(200).json(result);
+    } catch (err) {
+      logError(err);
+      res.status(500).json({
+        message: 'Internal server error, please see log in server for details',
+      });
+    }
+  });
+
+  /**
+   * remove a admin from the town
+   */
+  app.delete('/towns/:townID/admins/:adminName', BodyParser.json(), async (req, res) => {
+    try {
+      const result = await townAdminDeleteHandler({
+        coveyTownID: req.params.townID,
+        AdminName: req.params.adminName,
       });
       res.status(200).json(result);
     } catch (err) {
@@ -105,7 +148,7 @@ export default function addTownRoutes(http: Server, app: Express): io.Server {
 
   app.get('/towns/:townID', BodyParser.json(), async (req, res) => {
     try {
-      const result = await townListBlockerHandler({ coveyTownID: req.params.townID });
+      const result = await singleTownListHandler({ coveyTownID: req.params.townID });
       res.status(StatusCodes.OK).json(result);
     } catch (err) {
       logError(err);
@@ -149,6 +192,9 @@ export default function addTownRoutes(http: Server, app: Express): io.Server {
     }
   });
 
+  /**
+   * Get a username
+   */
   app.get('/signup/:name', BodyParser.json(), async (_req, res) => {
     try {
       const result = await checkUserByNameHandler(_req.params.name);
@@ -161,6 +207,9 @@ export default function addTownRoutes(http: Server, app: Express): io.Server {
     }
   });
 
+  /**
+   * Create a user account
+   */
   app.post('/signup', BodyParser.json(), async (req, res) => {
     try {
       const result = await createUserHandler({
@@ -180,6 +229,9 @@ export default function addTownRoutes(http: Server, app: Express): io.Server {
     }
   });
 
+  /**
+   * Get a pair of username and password
+   */
   app.get('/signin/:name/:password', BodyParser.json(), async (_req, res) => {
     try {
       const result = await checkUserByNameAndPasswordHandler({
@@ -195,6 +247,9 @@ export default function addTownRoutes(http: Server, app: Express): io.Server {
     }
   });
 
+  /**
+   * Update a user account
+   */
   app.patch('/profile/:name', BodyParser.json(), async (req, res) => {
     try {
       const result = await updateUserHandler({

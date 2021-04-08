@@ -16,16 +16,16 @@ import {
   ModalOverlay,
   useDisclosure,
   useToast
-} from "@chakra-ui/react"
-import MenuItem from '@material-ui/core/MenuItem';
-import Typography from '@material-ui/core/Typography';
+} from "@chakra-ui/react";
 import usePlayerName from '../../hooks/usePlayerName';
 import UsersServiceClient from '../../classes/UsersServiceClient'
 
+/**
+ * The profile component which allows users to update their accounts, including password, email, gender, age and city
+ */
 export default function Profile(): JSX.Element {
 
   const userName = usePlayerName().name;
-  // const userServiceClient = new UsersServiceClient();
   const [password, setPassword] = React.useState('');
   const [passwordToMatch, setPasswordToMatch] = React.useState('');
   const [invalid, setInvalid] = React.useState(false);
@@ -40,6 +40,9 @@ export default function Profile(): JSX.Element {
     new UsersServiceClient()
   , []);
 
+  /**
+   * Render up-to-date user infomation
+   */
   const userInfomation = React.useCallback(() => {
     userServiceClient.findUserByName(userName).then((updateResponse) => {
       setPassword(updateResponse.password);
@@ -50,6 +53,9 @@ export default function Profile(): JSX.Element {
     })
   },[userName, userServiceClient]);
 
+  /**
+   * Ensure password matches
+   */
   React.useEffect(() => {
     if (passwordToMatch && password !== passwordToMatch) {
       setInvalid(true);
@@ -90,9 +96,7 @@ export default function Profile(): JSX.Element {
 
   return (
     <>
-    <MenuItem onClick={handleProfile}>
-      <Typography variant="body1">Profile</Typography>
-    </MenuItem>
+    <Button onClick={handleProfile} colorScheme="pink">Edit profile</Button>
     <Modal isOpen={isOpen} onClose={onClose}>
       <ModalOverlay/>
       <ModalContent>

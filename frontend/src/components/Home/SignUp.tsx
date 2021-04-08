@@ -17,6 +17,9 @@ import {
 import usePlayerName from '../../hooks/usePlayerName';
 import UsersServiceClient from '../../classes/UsersServiceClient'
 
+/**
+ * The sign up component which allows users to create an account, including username, password, email, gender, age and city
+ */
 export default function SignUp(): JSX.Element {
 
   const [userName, setUserName] = React.useState('');

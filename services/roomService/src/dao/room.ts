@@ -8,15 +8,19 @@ const RoomSchema = new Schema({
   admins: { type: [String], default: undefined },
   creator: { type: String, required: true },
   blockers: { type: [String], default: undefined },
+  isPublic: {type: Boolean},
+  maxOccupancy: {type: Number},
 });
 
 export interface Room extends Document {
   roomid: string;
   passsword?: string;
-  roomname?: string;
+  roomname: string;
   admins?: Array<string>;
   creator: string;
   blockers: Array<string>;
+  isPublic: boolean;
+  maxOccupancy: number;
 }
 // This model is mapping to MongoDB 'room' collection
 export const RoomModel = model('Room', RoomSchema, 'room');
@@ -27,6 +31,10 @@ export const getRoomById = async (id: string) => {
   const filter = { roomid: id };
   return RoomModel.findOne(filter);
 };
+
+export const listRooms = async () => {
+  return RoomModel.find();
+}
 
 export const updateRoomById = async (id: string, updated_info: Object) => {
   const filter = { roomid: id };

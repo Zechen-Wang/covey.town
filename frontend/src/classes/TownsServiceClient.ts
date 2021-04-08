@@ -19,19 +19,35 @@ export interface TownAddBlockerRequest {
   coveyTownID: string;
 }
 
-export interface TownlistBlockerByTownIdRequest {
+export interface TownAddAdminRequest {
+  /** userName of the player that would like to join * */
+  AdminName: string;
   /** ID of the town that the player would like to join * */
   coveyTownID: string;
 }
 
-export interface TownlistBlockerByTownIdResponse {
+export interface TownlistByTownIdRequest {
+  /** ID of the town that the player would like to join * */
+  coveyTownID: string;
+}
+
+export interface TownlistByTownIdResponse {
   /** ID of the town that the player would like to join * */
   blockers: string[];
+  creator: string;
+  admins: string[];
 }
 
 export interface TownDeleteBlockerRequest {
   /** userName of the player that would like to join * */
   blockerName: string;
+  /** ID of the town that the player would like to join * */
+  coveyTownID: string;
+}
+
+export interface TownDeleteAdminRequest {
+  /** userName of the player that would like to join * */
+  adminName: string;
   /** ID of the town that the player would like to join * */
   coveyTownID: string;
 }
@@ -63,6 +79,7 @@ export interface TownJoinResponse {
 export interface TownCreateRequest {
   friendlyName: string;
   isPubliclyListed: boolean;
+  creatorName:string
 }
 
 /**
@@ -143,13 +160,21 @@ export default class TownsServiceClient {
 
   async addBlocker(requestData: TownAddBlockerRequest): Promise<void> {
     const responseWrapper = await this._axios.post(
-      `/towns/${requestData.coveyTownID}/${requestData.blockerName}`,
+      `/towns/${requestData.coveyTownID}/blockers/${requestData.blockerName}`,
       requestData,
     );
     return TownsServiceClient.unwrapOrThrowError(responseWrapper, true);
   }
 
-  async listBlockerByTownId(requestData: TownlistBlockerByTownIdRequest): Promise<TownlistBlockerByTownIdResponse> {
+  async addAdmin(requestData: TownAddAdminRequest): Promise<void> {
+    const responseWrapper = await this._axios.post(
+      `/towns/${requestData.coveyTownID}/admins/${requestData.AdminName}`,
+      requestData,
+    );
+    return TownsServiceClient.unwrapOrThrowError(responseWrapper, true);
+  }
+
+  async listSingleTown(requestData: TownlistByTownIdRequest): Promise<TownlistByTownIdResponse> {
     const responseWrapper = await this._axios.get(
       `/towns/${requestData.coveyTownID}`,
     );
@@ -158,6 +183,11 @@ export default class TownsServiceClient {
 
   async deleteBlockerByTownId(requestData: TownDeleteBlockerRequest): Promise<void> {
     const responseWrapper = await this._axios.delete<ResponseEnvelope<void>>(`/towns/${requestData.coveyTownID}/blockers/${requestData.blockerName}`);
+    return TownsServiceClient.unwrapOrThrowError(responseWrapper, true);
+  }
+
+  async deleteAdminByTownId(requestData: TownDeleteAdminRequest): Promise<void> {
+    const responseWrapper = await this._axios.delete<ResponseEnvelope<void>>(`/towns/${requestData.coveyTownID}/admins/${requestData.adminName}`);
     return TownsServiceClient.unwrapOrThrowError(responseWrapper, true);
   }
 

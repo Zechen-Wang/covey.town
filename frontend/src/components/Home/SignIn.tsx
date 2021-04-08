@@ -15,6 +15,9 @@ import {
 import UsersServiceClient from '../../classes/UsersServiceClient'
 import usePlayerName from '../../hooks/usePlayerName';
 
+/**
+ * The sign in component which allows users to sign in with their username and password
+ */
 export default function SignIn(): JSX.Element {
   const [show, setShow] = React.useState(false)
   const handleClick = () => setShow(!show)
@@ -62,7 +65,7 @@ export default function SignIn(): JSX.Element {
           <Button onClick={handleClick} size='sm'>{show ? "Hide" : "Show"}</Button></InputRightElement>
         </InputGroup>
         <Stack direction="column" mt='3rem' align='center'>
-          <Button colorScheme='teal' size='lg' width='xs' onClick={handleLogIn}>Log in</Button>
+          <Button colorScheme='teal' size='lg' width='xs' onClick={handleLogIn}>Sign in</Button>
         </Stack>
       </FormControl>
       </Box> 
