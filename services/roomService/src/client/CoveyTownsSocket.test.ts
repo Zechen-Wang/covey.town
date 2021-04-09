@@ -8,6 +8,7 @@ import * as TestUtils from './TestUtils';
 import { UserLocation } from '../CoveyTypes';
 import TownsServiceClient from './TownsServiceClient';
 import addTownRoutes from '../router/towns';
+import { connect, disconnect } from '../database';
 
 type TestTownData = {
   friendlyName: string, coveyTownID: string,
@@ -24,6 +25,7 @@ describe('TownServiceApiSocket', () => {
     const ret = await apiClient.createTown({
       friendlyName,
       isPubliclyListed: isPublic,
+      creatorName: 'test',
     });
     return {
       friendlyName,
@@ -39,12 +41,14 @@ describe('TownServiceApiSocket', () => {
     server = http.createServer(app);
 
     addTownRoutes(server, app);
+    connect();
     server.listen();
     const address = server.address() as AddressInfo;
-
+    jest.setTimeout(30000);
     apiClient = new TownsServiceClient(`http://127.0.0.1:${address.port}`);
   });
   afterAll(async () => {
+    disconnect();
     server.close();
     TestUtils.cleanupSockets();
   });
