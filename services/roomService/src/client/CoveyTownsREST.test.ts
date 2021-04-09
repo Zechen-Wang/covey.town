@@ -7,6 +7,8 @@ import { AddressInfo } from 'net';
 import addTownRoutes from '../router/towns';
 import TownsServiceClient, { TownListResponse } from './TownsServiceClient';
 
+import { connect, disconnect } from '../database';
+
 type TestTownData = {
   friendlyName: string;
   coveyTownID: string;
@@ -54,8 +56,9 @@ describe('TownsServiceAPIREST', () => {
     const app = Express();
     app.use(CORS());
     server = http.createServer(app);
-
+    
     addTownRoutes(server, app);
+    connect(); // make connection to mongodb
     await server.listen();
     const address = server.address() as AddressInfo;
 
@@ -63,6 +66,7 @@ describe('TownsServiceAPIREST', () => {
   });
   afterAll(async () => {
     await server.close();
+    disconnect();
   });
   describe('CoveyTownCreateAPI', () => {
     it('Allows for multiple towns with the same friendlyName', async () => {
