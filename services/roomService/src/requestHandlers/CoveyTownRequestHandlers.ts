@@ -506,13 +506,13 @@ export async function updateUserHandler(
 ): Promise<ResponseEnvelope<void>> {
   await updateUserByName(
     requestData.userName,
-    new Object({
+    {
       password: requestData.password,
       email: requestData.email,
       gender: requestData.gender,
       age: requestData.age,
       city: requestData.city,
-    }),
+    },
   );
   return {
     isOK: true,
