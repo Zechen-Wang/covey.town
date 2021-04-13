@@ -240,7 +240,7 @@ export async function townAddBlockerHandler(
   if (!coveyTownController) {
     return {
       isOK: false,
-      message: 'Error: No such town1',
+      message: 'Error: No such town!',
     };
   }
 
@@ -248,7 +248,7 @@ export async function townAddBlockerHandler(
   if (result === null) {
     return {
       isOK: false,
-      message: 'Error: No such town1',
+      message: 'Error: No such town!',
     };
   }
   if (result.blockers.find((blocker: string) => blocker === requestData.blockerName)) {
@@ -257,7 +257,7 @@ export async function townAddBlockerHandler(
       message: 'User is already in the block list',
     };
   }
-  addBlockerToRoom(result.roomid, requestData.blockerName);
+  await addBlockerToRoom(result.roomid, requestData.blockerName);
   // coveyTownController.addBlocker(requestData.blockerName);
 
   return {
@@ -281,7 +281,7 @@ export async function townAddAdminHandler(
   if (!coveyTownController) {
     return {
       isOK: false,
-      message: 'Error: No such town1',
+      message: 'Error: No such town!',
     };
   }
 
@@ -289,16 +289,16 @@ export async function townAddAdminHandler(
   if (result === null) {
     return {
       isOK: false,
-      message: 'Error: No such town1',
+      message: 'Error: No such town!',
     };
   }
-  if (result.admins.find((admin: string) => admin === requestData.AdminName)) {
+  if (result.admins && result.admins.find((admin: string) => admin === requestData.AdminName)) {
     return {
       isOK: true,
       message: 'User is already in the Admin list',
     };
   }
-  addAdminToRoom(result.roomid, requestData.AdminName);
+  await addAdminToRoom(result.roomid, requestData.AdminName);
   // coveyTownController.addBlocker(requestData.blockerName);
 
   return {
@@ -310,7 +310,7 @@ export async function townAddAdminHandler(
 export async function townListHandler(): Promise<ResponseEnvelope<TownListResponse>> {
   const townsStore = CoveyTownsStore.getInstance();
   // Read public towns from database
-  townsStore.loadTownsFromDb();
+  await townsStore.loadTownsFromDb();
   return {
     isOK: true,
     response: { towns: townsStore.getTowns() },
@@ -329,7 +329,7 @@ export async function singleTownListHandler(
   // }
   return {
     isOK: true,
-    response: { blockers: result.blockers, creator: result.creator, admins: result.admins },
+    response: { blockers: result.blockers, creator: result.creator, admins: result.admins as string[] },
     message: 'single town list',
   };
 }
@@ -345,7 +345,7 @@ export async function townCreateHandler(
     };
   }
   const newTown = townsStore.createTown(requestData.friendlyName, requestData.isPubliclyListed);
-  createRoom({
+  await createRoom({
     roomid: newTown.coveyTownID,
     passsword: newTown.townUpdatePassword,
     roomname: newTown.friendlyName,
@@ -369,7 +369,7 @@ export async function townDeleteHandler(
   const townsStore = CoveyTownsStore.getInstance();
   const success = townsStore.deleteTown(requestData.coveyTownID, requestData.coveyTownPassword);
   if (success) {
-    deleteRoomById(requestData.coveyTownID);
+    await deleteRoomById(requestData.coveyTownID);
   }
   return {
     isOK: success,
@@ -387,7 +387,7 @@ export async function townBlockerDeleteHandler(
   if (result === null) {
     return {
       isOK: false,
-      message: 'Error: No such town1',
+      message: 'Error: No such town!',
     };
   }
   await removeBlockerFromRoom(requestData.coveyTownID, requestData.blockerName);
@@ -404,7 +404,7 @@ export async function townAdminDeleteHandler(
   if (result === null) {
     return {
       isOK: false,
-      message: 'Error: No such town1',
+      message: 'Error: No such town!',
     };
   }
   await removeAdminFromRoom(requestData.coveyTownID, requestData.AdminName);

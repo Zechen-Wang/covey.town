@@ -56,7 +56,7 @@ describe('TownsServiceAPIREST', () => {
     const app = Express();
     app.use(CORS());
     server = http.createServer(app);
-    
+
     addTownRoutes(server, app);
     connect(); // make connection to mongodb
     await server.listen();
@@ -237,4 +237,66 @@ describe('TownsServiceAPIREST', () => {
       expect(res2.coveyUserID).toBeDefined();
     });
   });
+
+  describe('List single town', () => {
+    it('Allows listing single town', async () => {
+      const friendlyName = nanoid();
+      const creatorName = nanoid();
+      const res = await apiClient.createTown({ friendlyName, isPubliclyListed: true, creatorName });
+      const retTown = await apiClient.listSingleTown({ coveyTownID: res.coveyTownID });
+      const { creator } = retTown;
+      expect(creator).toBe(creatorName);
+    });
+  });
+
+  describe('Add blockers', () => {
+    it('Allows adding blockers in town', async () => {
+      const friendlyName = nanoid();
+      const blockerName = nanoid();
+      const res = await apiClient.createTown({ friendlyName, isPubliclyListed: true, creatorName: nanoid() });
+      await apiClient.addBlocker({ blockerName, coveyTownID: res.coveyTownID });
+      const retTown = await apiClient.listSingleTown({ coveyTownID: res.coveyTownID });
+      expect(retTown.blockers).toContain(blockerName);
+    });
+  });
+
+  describe('Add admins', () => {
+    it('Allows adding admins in town', async () => {
+      const friendlyName = nanoid();
+      const adminName = nanoid();
+      const res = await apiClient.createTown({ friendlyName, isPubliclyListed: true, creatorName: nanoid() });
+      await apiClient.addAdmin({ AdminName: adminName, coveyTownID: res.coveyTownID });
+      const retTown = await apiClient.listSingleTown({ coveyTownID: res.coveyTownID });
+      expect(retTown.admins).toContain(adminName);
+    });
+  });
+
+  describe('Delete admins', () => {
+    it('Allows deleting admins in town', async () => {
+      const friendlyName = nanoid();
+      const adminName = nanoid();
+      const res = await apiClient.createTown({ friendlyName, isPubliclyListed: true, creatorName: nanoid() });
+      await apiClient.addAdmin({ AdminName: adminName, coveyTownID: res.coveyTownID });
+      let retTown = await apiClient.listSingleTown({ coveyTownID: res.coveyTownID });
+      expect(retTown.admins).toContain(adminName);
+      await apiClient.deleteAdminByTownId({ adminName, coveyTownID: res.coveyTownID });
+      retTown = await apiClient.listSingleTown({ coveyTownID: res.coveyTownID });
+      expect(retTown.admins).not.toContain(adminName);
+    });
+  });
+
+  describe('Delete blockers', () => {
+    it('Allows deleting blockers in town', async () => {
+      const friendlyName = nanoid();
+      const blockerName = nanoid();
+      const res = await apiClient.createTown({ friendlyName, isPubliclyListed: true, creatorName: nanoid() });
+      await apiClient.addBlocker({ blockerName, coveyTownID: res.coveyTownID });
+      let retTown = await apiClient.listSingleTown({ coveyTownID: res.coveyTownID });
+      expect(retTown.blockers).toContain(blockerName);
+      await apiClient.deleteBlockerByTownId({ blockerName, coveyTownID: res.coveyTownID });
+      retTown = await apiClient.listSingleTown({ coveyTownID: res.coveyTownID });
+      expect(retTown.blockers).not.toContain(blockerName);
+    });
+  });
+
 });
