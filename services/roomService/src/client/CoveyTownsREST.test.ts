@@ -61,7 +61,7 @@ describe('TownsServiceAPIREST', () => {
     connect(); // make connection to mongodb
     await server.listen();
     const address = server.address() as AddressInfo;
-
+    jest.setTimeout(30000);
     apiClient = new TownsServiceClient(`http://127.0.0.1:${address.port}`);
   });
   afterAll(async () => {
