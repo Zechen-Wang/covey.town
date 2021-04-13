@@ -18,14 +18,14 @@ type TestUserData = {
   city: string,
 };
 
-function createUserInfo(userNameToUse?:string, passwordToUse?:string, 
-  emailToUse?:string, genderToUse?:string, ageToUse?:string, cityToUse?:string): TestUserData {
-  const userName = userNameToUse!==undefined? userNameToUse:nanoid();
-  const password = passwordToUse!==undefined? passwordToUse:nanoid();
-  const email = emailToUse!==undefined? emailToUse:nanoid();
-  const age = ageToUse!==undefined? ageToUse:nanoid();
-  const gender = genderToUse!==undefined? genderToUse:nanoid();
-  const city = cityToUse!==undefined? cityToUse:nanoid();
+function createUserInfo(userNameToUse?: string, passwordToUse?: string,
+  emailToUse?: string, genderToUse?: string, ageToUse?: string, cityToUse?: string): TestUserData {
+  const userName = userNameToUse !== undefined ? userNameToUse : nanoid();
+  const password = passwordToUse !== undefined ? passwordToUse : nanoid();
+  const email = emailToUse !== undefined ? emailToUse : nanoid();
+  const age = ageToUse !== undefined ? ageToUse : nanoid();
+  const gender = genderToUse !== undefined ? genderToUse : nanoid();
+  const city = cityToUse !== undefined ? cityToUse : nanoid();
   return { userName, password, email, gender, age, city };
 }
 
@@ -82,8 +82,10 @@ describe('TownsServiceAPIREST', () => {
       const testUserData = createUserInfo();
       await apiClient.createUser(testUserData);
       const foundUser = await apiClient.findUserByName(nanoid());
-      const falseUserData:TestUserData = {userName: testUserData.userName, password:'',
-        gender:'', age:'', email:'', city:''};
+      const falseUserData: TestUserData = {
+        userName: testUserData.userName, password: '',
+        gender: '', age: '', email: '', city: '',
+      };
       expectUserInfoMatches(falseUserData, foundUser);
     });
   });
@@ -93,21 +95,24 @@ describe('TownsServiceAPIREST', () => {
       const testUserData = createUserInfo();
       await apiClient.createUser(testUserData);
       const res = await apiClient.findUserByNameAndPassword({
-        userName: testUserData.userName, password:testUserData.password});
+        userName: testUserData.userName, password: testUserData.password,
+      });
       expect(res).toBe(true);
     });
     it('Cound not find user by false userName', async () => {
       const testUserData = createUserInfo();
       await apiClient.createUser(testUserData);
       const res = await apiClient.findUserByNameAndPassword({
-        userName: nanoid(), password:testUserData.password});
+        userName: nanoid(), password: testUserData.password,
+      });
       expect(res).toBe(false);
     });
     it('Cound not find user by false password', async () => {
       const testUserData = createUserInfo();
       await apiClient.createUser(testUserData);
       const res = await apiClient.findUserByNameAndPassword({
-        userName: testUserData.userName, password:nanoid()});
+        userName: testUserData.userName, password: nanoid(),
+      });
       expect(res).toBe(false);
     });
   });
@@ -118,7 +123,7 @@ describe('TownsServiceAPIREST', () => {
       const testUserData = createUserInfo();
       await apiClient.createUser(testUserData);
       const newPassword = nanoid();
-      const updatedUserData = createUserInfo(testUserData.userName, newPassword, 
+      const updatedUserData = createUserInfo(testUserData.userName, newPassword,
         undefined, undefined, undefined, undefined);
       await apiClient.updateUser(updatedUserData);
       const foundUser = await apiClient.findUserByName(testUserData.userName);
@@ -128,7 +133,7 @@ describe('TownsServiceAPIREST', () => {
       const testUserData = createUserInfo();
       await apiClient.createUser(testUserData);
       const newEmail = nanoid();
-      const updatedUserData = createUserInfo(testUserData.userName, undefined, 
+      const updatedUserData = createUserInfo(testUserData.userName, undefined,
         newEmail, undefined, undefined, undefined);
       await apiClient.updateUser(updatedUserData);
       const foundUser = await apiClient.findUserByName(testUserData.userName);
@@ -138,7 +143,7 @@ describe('TownsServiceAPIREST', () => {
       const testUserData = createUserInfo();
       await apiClient.createUser(testUserData);
       const newGender = nanoid();
-      const updatedUserData = createUserInfo(testUserData.userName, undefined, 
+      const updatedUserData = createUserInfo(testUserData.userName, undefined,
         undefined, newGender, undefined, undefined);
       await apiClient.updateUser(updatedUserData);
       const foundUser = await apiClient.findUserByName(testUserData.userName);
@@ -148,7 +153,7 @@ describe('TownsServiceAPIREST', () => {
       const testUserData = createUserInfo();
       await apiClient.createUser(testUserData);
       const newAge = nanoid();
-      const updatedUserData = createUserInfo(testUserData.userName, undefined, 
+      const updatedUserData = createUserInfo(testUserData.userName, undefined,
         undefined, undefined, newAge, undefined);
       await apiClient.updateUser(updatedUserData);
       const foundUser = await apiClient.findUserByName(testUserData.userName);
@@ -158,7 +163,7 @@ describe('TownsServiceAPIREST', () => {
       const testUserData = createUserInfo();
       await apiClient.createUser(testUserData);
       const newCity = nanoid();
-      const updatedUserData = createUserInfo(testUserData.userName, undefined, 
+      const updatedUserData = createUserInfo(testUserData.userName, undefined,
         undefined, undefined, undefined, newCity);
       await apiClient.updateUser(updatedUserData);
       const foundUser = await apiClient.findUserByName(testUserData.userName);
@@ -167,7 +172,7 @@ describe('TownsServiceAPIREST', () => {
     it('Allows updating user by multiple attributes', async () => {
       const testUserData = createUserInfo();
       await apiClient.createUser(testUserData);
-      const updatedUserData = createUserInfo(testUserData.userName, nanoid(), 
+      const updatedUserData = createUserInfo(testUserData.userName, nanoid(),
         nanoid(), nanoid(), nanoid(), nanoid());
       await apiClient.updateUser(updatedUserData);
       const foundUser = await apiClient.findUserByName(testUserData.userName);
@@ -175,9 +180,4 @@ describe('TownsServiceAPIREST', () => {
     });
 
   });
-
-
-
-
-
 });

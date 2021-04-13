@@ -244,8 +244,9 @@ describe('TownsServiceAPIREST', () => {
       const creatorName = nanoid();
       const res = await apiClient.createTown({ friendlyName, isPubliclyListed: true, creatorName });
       const retTown = await apiClient.listSingleTown({ coveyTownID: res.coveyTownID });
-      const { creator } = retTown;
-      expect(creator).toBe(creatorName);
+      expect(retTown.creator).toBe(creatorName);
+      expect(retTown.admins.length).toEqual(0);
+      expect(retTown.blockers.length).toEqual(0);
     });
   });
 
@@ -258,6 +259,9 @@ describe('TownsServiceAPIREST', () => {
       const retTown = await apiClient.listSingleTown({ coveyTownID: res.coveyTownID });
       expect(retTown.blockers).toContain(blockerName);
     });
+    it('Expected an error to be thrown by providing incorrect town id', async () => {
+      await expect(apiClient.addBlocker({ blockerName: nanoid(), coveyTownID: nanoid() })).rejects.toThrowError();
+    });
   });
 
   describe('Add admins', () => {
@@ -268,6 +272,9 @@ describe('TownsServiceAPIREST', () => {
       await apiClient.addAdmin({ AdminName: adminName, coveyTownID: res.coveyTownID });
       const retTown = await apiClient.listSingleTown({ coveyTownID: res.coveyTownID });
       expect(retTown.admins).toContain(adminName);
+    });
+    it('Expected an error to be thrown by providing incorrect town id', async () => {
+      await expect(apiClient.addAdmin({ AdminName: nanoid(), coveyTownID: nanoid() })).rejects.toThrowError();
     });
   });
 
@@ -283,6 +290,9 @@ describe('TownsServiceAPIREST', () => {
       retTown = await apiClient.listSingleTown({ coveyTownID: res.coveyTownID });
       expect(retTown.admins).not.toContain(adminName);
     });
+    it('Expected an error to be thrown by providing incorrect town id', async () => {
+      await expect(apiClient.deleteAdminByTownId({ adminName: nanoid(), coveyTownID: nanoid() })).rejects.toThrowError();
+    });
   });
 
   describe('Delete blockers', () => {
@@ -296,6 +306,9 @@ describe('TownsServiceAPIREST', () => {
       await apiClient.deleteBlockerByTownId({ blockerName, coveyTownID: res.coveyTownID });
       retTown = await apiClient.listSingleTown({ coveyTownID: res.coveyTownID });
       expect(retTown.blockers).not.toContain(blockerName);
+    });
+    it('Expected an error to be thrown by providing incorrect town id', async () => {
+      await expect(apiClient.deleteBlockerByTownId({ blockerName: nanoid(), coveyTownID: nanoid() })).rejects.toThrowError();
     });
   });
 
