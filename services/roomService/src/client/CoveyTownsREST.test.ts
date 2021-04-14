@@ -80,6 +80,7 @@ describe('TownsServiceAPIREST', () => {
         fail('createTown should throw an error if friendly name is empty string');
       } catch (err) {
         // OK
+        expect(err.message).toBe('Error processing request: FriendlyName must be specified');
       }
     });
   });
@@ -120,8 +121,11 @@ describe('TownsServiceAPIREST', () => {
           coveyTownPassword: nanoid(),
         });
         fail('Expected deleteTown to throw an error');
-      } catch (e) {
+      } catch (err) {
         // Expected error
+        expect(err.message)
+          .toBe('Error processing request: Invalid password. ' +
+            'Please double check your town update password.');
       }
     });
     it('Throws an error if the townID is invalid', async () => {
@@ -132,8 +136,10 @@ describe('TownsServiceAPIREST', () => {
           coveyTownPassword: townUpdatePassword,
         });
         fail('Expected deleteTown to throw an error');
-      } catch (e) {
+      } catch (err) {
         // Expected error
+        expect(err.message).toBe('Error processing request: Invalid password. ' +
+          'Please double check your town update password.');
       }
     });
     it('Deletes a town if given a valid password and town, no longer allowing it to be joined or listed', async () => {
@@ -148,8 +154,9 @@ describe('TownsServiceAPIREST', () => {
           coveyTownID,
         });
         fail('Expected joinTown to throw an error');
-      } catch (e) {
+      } catch (err) {
         // Expected
+        expect(err.message).toBe('Error processing request: Error: No such town');
       }
       const listedTowns = await apiClient.listTowns();
       if (listedTowns.towns.find(r => r.coveyTownID === coveyTownID)) {
@@ -173,6 +180,9 @@ describe('TownsServiceAPIREST', () => {
         // err expected
         // TODO this should really check to make sure it's the *right* error, but we didn't specify
         // the format of the exception :(
+        expect(err.message).toBe('Error processing request: ' +
+          'Invalid password or update values specified. ' +
+          'Please double check your town update password.');
       }
 
       // Make sure name or vis didn't change
@@ -217,6 +227,7 @@ describe('TownsServiceAPIREST', () => {
         // OK, expected an error
         // TODO this should really check to make sure it's the *right* error, but we didn't specify
         // the format of the exception :(
+        expect(err.message).toBe('Error processing request: Error: No such town');
       }
     });
     it('Admits a user to a valid public or private town', async () => {

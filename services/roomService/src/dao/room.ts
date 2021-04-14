@@ -16,13 +16,13 @@ export interface Room extends Document {
   roomid: string;
   passsword?: string;
   roomname: string;
-  // admins?: Array<string>;
   admins: Array<string>;
   creator: string;
   blockers: Array<string>;
   isPublic: boolean;
   maxOccupancy: number;
 }
+
 // This model is mapping to MongoDB 'room' collection
 export const RoomModel = model('Room', RoomSchema, 'room');
 
@@ -36,12 +36,10 @@ type CreateRoomRequest = {
   isPublic: boolean,
 };
 
-// export const createRoom = async (room_instance: Object): Promise<void> => RoomModel.create(room_instance);
 export const createRoom = async (room_instance: CreateRoomRequest): Promise<void> => RoomModel.create(room_instance);
 
 export const getRoomById = async (id: string): Promise<Room> => {
   const filter = { roomid: id };
-  // return RoomModel.findOne(filter);
   const room: Room = await RoomModel.findOne(filter);
   return room;
 };
@@ -51,18 +49,7 @@ export const listRooms = async (): Promise<Room[]> => {
   return rooms;
 };
 
-// export const updateRoomById = async (id: string, updated_info: Object): Promise<void> => {
-//   const filter = { roomid: id };
-//   return RoomModel.findOneAndUpdate(filter, updated_info);
-// };
-
 export const addAdminToRoom = async (roomid: string, admin: string): Promise<void> => {
-  // getRoomById(roomid).then(room => {
-  //   const { admins } = room;
-  //   admins.push(admin);
-  //   updateRoomById(roomid, room);
-  // });
-
   const room = await getRoomById(roomid);
   const { admins } = room;
   admins.push(admin);
@@ -73,12 +60,6 @@ export const addAdminToRoom = async (roomid: string, admin: string): Promise<voi
 };
 
 export const addBlockerToRoom = async (roomid: string, blocker: string): Promise<void> => {
-  // getRoomById(roomid).then(room => {
-  //   const { blockers } = room;
-  //   blockers.push(blocker);
-  //   updateRoomById(roomid, room);
-  // });
-
   const room = await getRoomById(roomid);
   const { blockers } = room;
   blockers.push(blocker);
@@ -88,38 +69,18 @@ export const addBlockerToRoom = async (roomid: string, blocker: string): Promise
 };
 
 export const removeAdminFromRoom = async (roomid: string, admin: string): Promise<void> => {
-  // getRoomById(roomid).then(room => {
-  //   const { admins } = room;
-  //   const index = admins.indexOf(admin);
-  //   if (index > -1) {
-  //     admins.splice(index, 1);
-  //     updateRoomById(roomid, room);
-  //   }
-  // });
-
   const room = await getRoomById(roomid);
   const { admins } = room;
   const index = admins.indexOf(admin);
   if (index > -1) {
     admins.splice(index, 1);
-    // updateRoomById(roomid, room);
   }
   const update = { admins };
-  // await updateRoomById(roomid, update);
   const filter = { roomid };
   await RoomModel.findOneAndUpdate(filter, update);
 };
 
 export const removeBlockerFromRoom = async (roomid: string, blocker: string): Promise<void> => {
-  // getRoomById(roomid).then(room => {
-  //   const { blockers } = room;
-  //   const index = blockers.indexOf(blocker);
-  //   if (index > -1) {
-  //     blockers.splice(index, 1);
-  //     updateRoomById(roomid, room);
-  //   }
-  // });
-
   const room = await getRoomById(roomid);
   const { blockers } = room;
   const index = blockers.indexOf(blocker);
@@ -127,7 +88,6 @@ export const removeBlockerFromRoom = async (roomid: string, blocker: string): Pr
     blockers.splice(index, 1);
   }
   const update = { blockers };
-  // await updateRoomById(roomid, update);
   const filter = { roomid };
   await RoomModel.findOneAndUpdate(filter, update);
 };
