@@ -107,7 +107,7 @@ export default function Creator(): JSX.Element {
                           })
                     }}
                     colorScheme="red" size="sm">
-                        Unassign player
+                        Unassign admin
                     </Button>
                     </>
                  </ListItem>
