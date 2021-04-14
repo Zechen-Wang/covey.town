@@ -78,7 +78,14 @@ export default class CoveyTownController {
   private _capacity: number;
 
   constructor(friendlyName: string, isPubliclyListed: boolean, id?: string) {
-    this._coveyTownID = process.env.DEMO_TOWN_ID === friendlyName ? friendlyName : (id ? id : friendlyNanoID());
+    if (process.env.DEMO_TOWN_ID === friendlyName) {
+      this._coveyTownID = friendlyName;
+    } else if (id) {
+      this._coveyTownID = id;
+    } else {
+      this._coveyTownID = friendlyNanoID();
+    }
+
     this._capacity = 50;
     this._townUpdatePassword = nanoid(24);
     this._isPubliclyListed = isPubliclyListed;

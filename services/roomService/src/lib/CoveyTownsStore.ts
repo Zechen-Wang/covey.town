@@ -17,7 +17,7 @@ export default class CoveyTownsStore {
 
   private _towns: CoveyTownController[] = [];
 
-  private _isDbLoaded: boolean = false;
+  private _isDbLoaded = false;
 
   static getInstance(): CoveyTownsStore {
     if (CoveyTownsStore._instance === undefined) {
@@ -46,14 +46,12 @@ export default class CoveyTownsStore {
     return newTown;
   }
 
-  async loadTownsFromDb() {
+  async loadTownsFromDb(): Promise<void> {
     if (this._isDbLoaded === false) {
-      const rooms_in_db = await listRooms() as Array<Room>;
-      console.log(rooms_in_db);
-      rooms_in_db.map((room) => {
+      const roomsInDb = await listRooms() as Array<Room>;
+      roomsInDb.forEach((room) => {
         const newController = new CoveyTownController(room.roomname, room.isPublic, room.roomid);
         this._towns.push(newController);
-        console.log('pushing town to _towns');
       });
       this._isDbLoaded = true;
     }

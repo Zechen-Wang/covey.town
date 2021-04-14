@@ -18,7 +18,6 @@ import {
   Thead,
   Tr,
   useToast,
-  Text
 } from '@chakra-ui/react';
 import useVideoContext from '../VideoCall/VideoFrontend/hooks/useVideoContext/useVideoContext';
 import Video from '../../classes/Video/Video';
