@@ -14,6 +14,7 @@ You can view our reference deployment of the app at `<Insert Heroku Link>`.
 
 The figure above depicts the high-level architecture of Covey.Town.
 ![Database UML](coveyTown_uml.png)
+
 The figure above indicates that the database table attributes.
 
 The frontend client (in the `frontend` directory of this repository) uses the [PhaserJS Game Library](https://phaser.io) to create a 2D game interface, using tilemaps and sprites.
