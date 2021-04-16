@@ -1,10 +1,9 @@
 # Covey.Town
 
-Database: 
+Database:
 MongoDB is used to store user information and room information. See UML for more details. During backend service starts, it connects to MongoDB by using the MongoDB URL and Mongoose is being used to help do CRUD actions to MongoDB collections.
 
 Database UML:
-
 
 ![Database UML](coveyTown_uml.png)
 
