@@ -17,5 +17,4 @@ The figure above indicates that the database table attributes.
 
 CRC Cards:
 
-![CRC](CRC_.png)
-
+![CRC](CRC_.jpg)
