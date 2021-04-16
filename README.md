@@ -61,3 +61,13 @@ Create a `.env` file in the `frontend` directory, with the line: `REACT_APP_TOWN
 
 In the `frontend` directory, run `npm start` (again, you'll need to run `npm install` the very first time). After several moments (or minutes, depending on the speed of your machine), a browser will open with the frontend running locally.
 The frontend will automatically re-compile and reload in your browser if you change any files in the `frontend/src` directory.
+
+### Deploying the application
+Follow the steps of [Activity 10.1](https://neu-se.github.io/CS4530-CS5500-Spring-2021/Activities/continuous-development) to deploy the application. 
+#### Sample deployment
+heroku: https://covey-town-1.herokuapp.com/towns
+
+netlify: https://60775d7e72359f468d20dac8--nifty-colden-401fa5.netlify.app
+
+### Link to repository
+https://github.com/Zechen-Wang/covey.town
