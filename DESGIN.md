@@ -11,8 +11,8 @@ Database UML:
 The figure above indicates that the database table attributes.
 
 CRC Cards:
-![CRC](CRC1.png)
-![CRC](CRC2.png)
+
+![CRC](CRC_.png)
 
 Add a page for users to sign up and sign in (Home.tsx) and add a modal in the next page (Profile.tsx) for users to update their account. Create a client in the frontend and modify the existing Restful to transfer data between frontend and backend.
 Add a page to help town creators regulate the town(Creator.tsx) including disconnecting a user by adding him to the blocker list and assigning a user to be administrator. Create a client in the front allowing send and retrieve creator, blockers and administrators information through calling the Mongoose library to interact with the MongoDB database to manage the above information.
